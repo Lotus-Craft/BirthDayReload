@@ -20,6 +20,7 @@ repositories {
 
 dependencies {
     compileOnly "io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT"
+
     // JDBI Core
     implementation 'org.jdbi:jdbi3-core:3.38.0'
 
@@ -28,7 +29,8 @@ dependencies {
 
     // Логування для JDBI (опціонально, для налагодження)
     implementation 'org.jdbi:jdbi3-sqlobject:3.38.0'
-    implementation 'org.slf4j:slf4j-simple:2.0.7'
+    runtimeOnly 'org.slf4j:slf4j-api:2.0.7'
+
 }
 
 def targetJavaVersion = 17
@@ -59,9 +61,12 @@ processResources {
 
 // ShadowJar конфігурація
 shadowJar {
-    archiveClassifier.set('') // Замінює стандартний JAR файлом з залежностями
-    relocate 'org.jdbi', 'org.referix.libs.jdbi' // Уникає конфліктів з іншими плагінами
+    archiveClassifier.set('') // Замінює стандартний JAR
+    minimize()
+    exclude 'org/sqlite/native/**'
+    relocate 'org.jdbi', 'org.referix.libs.jdbi'
     relocate 'org.sqlite', 'org.referix.libs.sqlite'
 }
+
 
 build.dependsOn shadowJar

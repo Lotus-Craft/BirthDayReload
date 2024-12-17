@@ -1,0 +1,20 @@
+name: BirthDayReload
+version: '1.0-SNAPSHOT'
+main: org.referix.birthDayReload.BirthDayReload
+api-version: '1.20'
+commands:
+  birthday:
+    description: Manage birthdays.
+    usage: /<command> [set|delete|list|help]
+    permission: birthday.use
+    permission-message: You don't have permission to use this command.
+permissions:
+  birthday.use:
+    description: Allow use of the /birthday command
+    default: true
+  birthday.delete:
+    description: Allow deletion of birthday data
+    default: op
+  birthday.list:
+    description: Allow listing all birthday data
+    default: op

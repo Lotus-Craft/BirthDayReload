@@ -1,11 +1,13 @@
 package org.referix.birthDayReload;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.referix.birthDayReload.command.MainCommand;
 import org.referix.birthDayReload.database.Database;
 import org.referix.birthDayReload.inventory.YearInventory;
 import org.referix.birthDayReload.inventory.InventoryClickHandler;
 import org.referix.birthDayReload.inventory.InventoryManager;
+import org.referix.birthDayReload.papi.BirthdayPlaceholder;
 import org.referix.birthDayReload.utils.LoggerUtils;
 
 public final class BirthDayReload extends JavaPlugin {
@@ -51,6 +53,14 @@ public final class BirthDayReload extends JavaPlugin {
             e.printStackTrace();
             getServer().getPluginManager().disablePlugin(this);
             return;
+        }
+
+        // Перевірка наявності PlaceholderAPI
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            new BirthdayPlaceholder().register();
+            getLogger().info("BirthdayPlaceholder successfully registered with PlaceholderAPI.");
+        } else {
+            getLogger().warning("PlaceholderAPI not found. BirthdayPlaceholder not registered.");
         }
 
 

@@ -13,11 +13,14 @@ public class PlayerData {
     private boolean isWished;
     private List<String> Wished;
 
-    public PlayerData(Player player, LocalDate birthday, boolean isWished, List<String> wished) {
+    private String prefix;
+
+    public PlayerData(Player player, LocalDate birthday, boolean isWished, List<String> wished , String prefix) {
         this.player = player;
         this.birthday = birthday;
         this.isWished = isWished;
         Wished = wished;
+        this.prefix = prefix;
     }
 
     public PlayerData(Player player) {
@@ -25,8 +28,13 @@ public class PlayerData {
         this.birthday = null;
         this.isWished = false;
         this.Wished = new ArrayList<>();
+        this.prefix = null;
     }
 
+
+    public String getPrefix() {
+        return prefix;
+    }
 
 
     public List<String> getWished() {
@@ -47,6 +55,10 @@ public class PlayerData {
 
     public void setBirthday(LocalDate birthday) {
         this.birthday = birthday;
+    }
+
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
     }
 
     public void setPlayer(Player player) {

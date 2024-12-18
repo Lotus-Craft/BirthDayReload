@@ -4,7 +4,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.referix.birthDayReload.inventory.YearInventory;
+import org.referix.birthDayReload.playerdata.PlayerData;
 import org.referix.birthDayReload.playerdata.PlayerManager;
+
+import java.time.LocalDate;
 
 public class MainCommand extends AbstractCommand {
 
@@ -49,18 +52,42 @@ public class MainCommand extends AbstractCommand {
             return;
         }
 
-        if (args.length != 1) {
-            sender.sendMessage("§cUsage: /birthday set");
+        if (args.length != 2) { // Перевіряємо, чи аргумент містить дату
+            sender.sendMessage("§cUsage: /birthday set <yyyy-mm-dd>");
             return;
         }
 
         Player player = (Player) sender;
+        String dateInput = args[1];
+
         try {
-            inventoryData.open(player);
+            LocalDate birthday = LocalDate.parse(dateInput); // Конвертуємо аргумент у LocalDate
+           // if (isValidBirthday(birthday)) { // Валідність дати (не в майбутньому)
+                // Збереження дати в PlayerData
+                PlayerData data = PlayerManager.getInstance().getPlayerData(player);
+                data.setBirthday(birthday);
+                PlayerManager.getInstance().savePlayerData(player);
+
+                player.sendMessage("§aYour birthday has been set to: " + birthday);
+//            } else {
+//                player.sendMessage("§cInvalid date. The birthday cannot be in the future.");
+//            }
         } catch (Exception e) {
-            sender.sendMessage("§cInvalid date format. Use yyyy-mm-dd.");
+            player.sendMessage("§cInvalid date format. Use yyyy-mm-dd.");
         }
     }
+
+//    // Метод перевірки валідності дати
+//    private boolean isValidBirthday(LocalDate date) {
+//        return !date.isAfter(LocalDate.now()); // Дата не повинна бути в майбутньому
+//    }
+
+
+//    try {
+//        inventoryData.open(player);
+//    } catch (Exception e) {
+//        sender.sendMessage("§cInvalid date format. Use yyyy-mm-dd.");
+//    }
 
     private void handleDelete(CommandSender sender, String[] args) {
         if (!sender.hasPermission("birthday.delete")) {

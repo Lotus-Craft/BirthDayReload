@@ -37,7 +37,7 @@ public class PlayerDataDAO {
                         player,
                         LocalDate.parse(rs.getString("birthday")),
                         rs.getInt("is_wished") == 1,
-                        List.of(rs.getString("wished").split(","))
+                        List.of(rs.getString("wished").split(",")), null
                 ))
                 .findOne());
     }
@@ -55,7 +55,7 @@ public class PlayerDataDAO {
                             player,
                             LocalDate.parse(rs.getString("birthday")),
                             rs.getInt("is_wished") == 1,
-                            List.of(rs.getString("wished").split(","))
+                            List.of(rs.getString("wished").split(",")), null
                     );
                 }).list());
     }

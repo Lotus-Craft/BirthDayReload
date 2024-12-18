@@ -39,18 +39,17 @@ public class MainListener implements Listener {
                     player.sendMessage("§6§lHappy Birthday, " + player.getName() + "! 🎉");
                     player.sendMessage("§aMay your day be filled with joy and celebration!");
 
-                    data.setWished(true); // Встановлюємо прапорець
-
+                    data.setIsWished(true); // Встановлюємо прапорець
                     log("Birthday prefix and wish set for: " + player.getName());
                 } else {
                     player.sendMessage("§eWelcome back and Happy Birthday once again! 🎂");
-                    data.setPrefix("Test Birthday"); // Встановлюємо префікс
                     manager.savePlayerData(player); // Зберігаємо дані
                 }
+                data.setPrefix(BirthDayReload.getInstance().getMessageManager().BIRTHDAY_BOY_PREFIX); // Встановлюємо префікс
             } else {
                 // Скидання isWished, якщо сьогодні не день народження
                 if (data.isWished()) {
-                    data.setWished(false);
+                    data.setIsWished(false);
                     data.setPrefix(null); // Встановлюємо префікс
                     manager.savePlayerData(player);
                     log("Birthday flag reset for: " + player.getName());

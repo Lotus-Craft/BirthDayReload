@@ -1,6 +1,8 @@
 package org.referix.birthDayReload.papi;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,7 +18,7 @@ public class BirthdayPlaceholder extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getIdentifier() {
-        return "birthday"; // Префікс плейсхолдера
+        return "birthday"; // Префикс плейсхолдера
     }
 
     @Override
@@ -36,7 +38,7 @@ public class BirthdayPlaceholder extends PlaceholderExpansion {
 
     @Override
     public boolean persist() {
-        return true; // Не реєструвати плейсхолдер після перезавантаження
+        return true; // Плейсхолдер будет сохраняться между перезагрузками
     }
 
     @Override
@@ -46,33 +48,29 @@ public class BirthdayPlaceholder extends PlaceholderExpansion {
         }
 
         PlayerData data = PlayerManager.getInstance().getPlayerData(player);
-
-        // Плейсхолдери
-        switch (identifier) {
-            case "date": // %birthday_date%
-                LocalDate birthday = data.getBirthday();
-                return (birthday != null) ? birthday.format(DATE_FORMAT) : "Not set";
-
-            case "is_today": // %birthday_is_today%
-                LocalDate today = LocalDate.now();
-                if (data.getBirthday() != null && data.getBirthday().getMonth() == today.getMonth() &&
-                        data.getBirthday().getDayOfMonth() == today.getDayOfMonth()) {
-                    return "Yes";
-                }
-                return "No";
-
-            case "wished": // %birthday_wished%
-                return data.isWished() ? "Yes" : "No";
-
-            case "prefix": {
-                if (data.getPrefix() != null) {
-                    return data.getPrefix();
-                }
-                return "";
-            } // %birthday_prefix%
-
-            default:
-                return null;
+        if (data == null) {
+            return "";
         }
+
+        LocalDate today = LocalDate.now();
+
+        return switch (identifier) {
+            case "date" -> // %birthday_date%
+                    (data.getBirthday() != null) ? data.getBirthday().format(DATE_FORMAT) : "Not set";
+            case "is_today" -> // %birthday_is_today%
+                    (data.getBirthday() != null &&
+                            data.getBirthday().getMonth() == today.getMonth() &&
+                            data.getBirthday().getDayOfMonth() == today.getDayOfMonth()) ? "Yes" : "No";
+            case "wished" -> // %birthday_wished%
+                    data.isWished() ? "Yes" : "No";
+            case "prefix" -> {
+                if (data.getPrefix() != null) {
+                    Component prefixComponent = data.getPrefix();
+                    yield LegacyComponentSerializer.legacyAmpersand().serialize(prefixComponent) + "&r";
+                }
+                yield "";
+            }
+            default -> null;
+        };
     }
 }

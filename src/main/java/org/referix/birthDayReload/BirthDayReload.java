@@ -8,49 +8,62 @@ import org.referix.birthDayReload.inventory.YearInventory;
 import org.referix.birthDayReload.inventory.InventoryClickHandler;
 import org.referix.birthDayReload.inventory.InventoryManager;
 import org.referix.birthDayReload.papi.BirthdayPlaceholder;
+import org.referix.birthDayReload.utils.ConfigUtils;
 import org.referix.birthDayReload.utils.LoggerUtils;
+import org.referix.birthDayReload.utils.MessageManager;
+
+import static org.referix.birthDayReload.utils.LoggerUtils.log;
 
 public final class BirthDayReload extends JavaPlugin {
 
     private static BirthDayReload instance;
 
+    private ConfigUtils configUtils;
+
+    private MessageManager messageManager;
 
     @Override
     public void onEnable() {
         instance = this;
-        LoggerUtils.log("System initialization started...");
+        log("System initialization started...");
 
         // Ініціалізація бази даних
         try {
-            LoggerUtils.log("Starting DataBase BirthDayReload...");
+            log("Starting DataBase BirthDayReload...");
             Database.getJdbi();
-            LoggerUtils.log("Database initialized successfully.");
+            log("Database initialized successfully.");
         } catch (Exception e) {
-            LoggerUtils.log("Error starting DataBase BirthDayReload: " + e.getMessage());
-            e.printStackTrace();
+            log("Error starting DataBase BirthDayReload: " + e.getMessage());
             getServer().getPluginManager().disablePlugin(this);
-            return; // Зупиняємо ініціалізацію плагіна
+            return;
+        }
+        //config load
+        try {
+            this.configUtils = new ConfigUtils(this);
+            messageManager = new MessageManager(this);
+        } catch (Exception e){
+            log("Error loading config file: " + e.getMessage());
+            getServer().getPluginManager().disablePlugin(this);
         }
 
         // Створення та реєстрація команди
         try {
-            LoggerUtils.log("Registering commands...");
+            log("Registering commands...");
 
             // Створення інвентаря
-            LoggerUtils.log("Initializing CustomInventory...");
+            log("Initializing CustomInventory...");
             YearInventory birthdayInventory = new YearInventory("Select Year your Birthday");
             InventoryManager.registerInventory(birthdayInventory);
-            LoggerUtils.log("CustomInventory initialized successfully.");
+            log("CustomInventory initialized successfully.");
 
             // Створення та реєстрація команди
-            LoggerUtils.log("Creating MainCommand instance...");
-            new MainCommand("birthday", birthdayInventory);
-            LoggerUtils.log("MainCommand registered successfully as 'birthday'.");
+            log("Creating MainCommand instance...");
+            new MainCommand("birthday", birthdayInventory, messageManager);
+            log("MainCommand registered successfully as 'birthday'.");
 
-            LoggerUtils.log("Commands registered successfully.");
+            log("Commands registered successfully.");
         } catch (Exception e) {
-            LoggerUtils.log("Error registering commands: " + e.getMessage());
-            e.printStackTrace();
+            log("Error registering commands: " + e.getMessage());
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
@@ -64,28 +77,32 @@ public final class BirthDayReload extends JavaPlugin {
         }
 
 
+
         // Реєстрація Listener'ів
         try {
-            LoggerUtils.log("Registering listeners...");
+            log("Registering listeners...");
             // Реєстрація обробника кліків
             getServer().getPluginManager().registerEvents(new InventoryClickHandler(), this);
 
             // Створення та реєстрація кастомних інвентарів
             getServer().getPluginManager().registerEvents(new MainListener(), this);
-            LoggerUtils.log("Listeners registered successfully.");
+            log("Listeners registered successfully.");
         } catch (Exception e) {
-            LoggerUtils.log("Error registering listeners: " + e.getMessage());
-            e.printStackTrace();
+            log("Error registering listeners: " + e.getMessage());
             getServer().getPluginManager().disablePlugin(this);
         }
 
-        LoggerUtils.log("BirthDayReload successfully enabled!");
+        log("BirthDayReload successfully enabled!");
     }
 
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+    }
+
+    public MessageManager getMessageManager() {
+        return messageManager;
     }
 
     public static BirthDayReload getInstance() {

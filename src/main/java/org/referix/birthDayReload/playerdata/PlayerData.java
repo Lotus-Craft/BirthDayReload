@@ -1,5 +1,6 @@
 package org.referix.birthDayReload.playerdata;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
 import java.time.LocalDate;
@@ -13,9 +14,9 @@ public class PlayerData {
     private boolean isWished;
     private List<String> Wished;
 
-    private String prefix;
+    private Component prefix;
 
-    public PlayerData(Player player, LocalDate birthday, boolean isWished, List<String> wished , String prefix) {
+    public PlayerData(Player player, LocalDate birthday, boolean isWished, List<String> wished , Component prefix) {
         this.player = player;
         this.birthday = birthday;
         this.isWished = isWished;
@@ -32,7 +33,7 @@ public class PlayerData {
     }
 
 
-    public String getPrefix() {
+    public Component getPrefix() {
         return prefix;
     }
 
@@ -57,7 +58,7 @@ public class PlayerData {
         this.birthday = birthday;
     }
 
-    public void setPrefix(String prefix) {
+    public void setPrefix(Component prefix) {
         this.prefix = prefix;
     }
 
@@ -65,11 +66,11 @@ public class PlayerData {
         this.player = player;
     }
 
-    public void setWished(boolean wished) {
+    public void setIsWished(boolean wished) {
         isWished = wished;
     }
 
-    public void setWished(List<String> wished) {
+    public void setIsWished(List<String> wished) {
         Wished = wished;
     }
 }

@@ -3,17 +3,18 @@ package org.referix.birthDayReload.command;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.referix.birthDayReload.BirthDayReload;
+import org.referix.birthDayReload.inventory.YearInventory;
 import org.referix.birthDayReload.playerdata.PlayerManager;
-import org.referix.birthDayReload.playerdata.PlayerData;
-
-import java.time.LocalDate;
 
 public class MainCommand extends AbstractCommand {
 
-    public MainCommand(String command) {
+    private YearInventory inventoryData;
+
+    public MainCommand(String command, YearInventory inventoryData) {
         super(command);
+        this.inventoryData = inventoryData;
     }
+
 
     @Override
     public boolean execute(CommandSender sender, String label, String[] args) {
@@ -48,17 +49,14 @@ public class MainCommand extends AbstractCommand {
             return;
         }
 
-        if (args.length != 2) {
-            sender.sendMessage("§cUsage: /birthday set <yyyy-mm-dd>");
+        if (args.length != 1) {
+            sender.sendMessage("§cUsage: /birthday set");
             return;
         }
 
         Player player = (Player) sender;
         try {
-            LocalDate birthday = LocalDate.parse(args[1]);
-            PlayerData data = PlayerManager.getInstance().getPlayerData(player);
-            data.setBirthday(birthday);
-            sender.sendMessage("§aYour birthday has been set to: " + birthday);
+            inventoryData.open(player);
         } catch (Exception e) {
             sender.sendMessage("§cInvalid date format. Use yyyy-mm-dd.");
         }

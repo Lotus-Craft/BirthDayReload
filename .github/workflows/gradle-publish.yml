@@ -25,65 +25,27 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew shadowJar
 
-      # Перевірка створення JAR
-      - name: List files in build/libs
-        run: ls -l build/libs
-
       # Пошук згенерованого JAR-файлу
       - name: Find JAR file
         id: jar
         run: |
-          echo "--- Searching for JAR file in build/libs ---"
           FILE=$(find build/libs -name 'BIRTHDAY-1.0.0-DEV.jar')
           if [ -z "$FILE" ]; then
             echo "[ERROR] JAR file not found in build/libs!"
             exit 1
           fi
-          echo "[INFO] Found JAR file: $FILE"
           echo "path=$FILE" >> $GITHUB_ENV
-
-      # Перевірка існування JAR-файлу
-      - name: Verify JAR file existence
-        run: |
-          echo "--- Verifying JAR file existence ---"
-          if [ ! -f "${{ env.path }}" ]; then
-            echo "[ERROR] JAR file does not exist: ${{ env.path }}"
-            exit 1
-          else
-            echo "[INFO] JAR file exists: ${{ env.path }}"
-          fi
 
       # Отримання версії з Gradle
       - name: Extract version from build.gradle
         id: get_version
         run: |
-          echo "--- Extracting plugin version from build.gradle ---"
           VERSION=$(grep "^version = " build.gradle | awk -F'=' '{print $2}' | xargs)
           if [ -z "$VERSION" ]; then
             echo "[ERROR] Plugin version not found in build.gradle!"
             exit 1
           fi
-          echo "[INFO] Plugin version: $VERSION"
           echo "plugin_version=$VERSION" >> $GITHUB_ENV
-
-      # Перевірка GITHUB_TOKEN
-      - name: Verify GITHUB_TOKEN
-        run: |
-          echo "--- Verifying GITHUB_TOKEN ---"
-          if [ -z "${{ secrets.GITHUB_TOKEN }}" ]; then
-            echo "[ERROR] GITHUB_TOKEN is not set!"
-            exit 1
-          else
-            echo "[INFO] GITHUB_TOKEN is set and ready to use."
-          fi
-
-      # Діагностика перед створенням релізу
-      - name: Debug Environment Variables
-        run: |
-          echo "--- Debugging environment variables ---"
-          echo "[INFO] Upload URL: ${{ steps.create_release.outputs.upload_url }}"
-          echo "[INFO] Asset Path: ${{ env.path }}"
-          echo "[INFO] Plugin Version: ${{ env.plugin_version }}"
 
       # Створення релізу
       - name: Create GitHub Release
@@ -109,9 +71,3 @@ jobs:
           asset_content_type: application/java-archive
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # Підтвердження успішного завершення
-      - name: Final Log
-        run: |
-          echo "--- Workflow completed successfully ---"
-          echo "[INFO] JAR file uploaded to release."

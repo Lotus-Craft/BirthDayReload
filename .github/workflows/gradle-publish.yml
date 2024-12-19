@@ -25,21 +25,27 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew shadowJar
 
-      # Перевірка створення JAR
-      - name: List files in build/libs
-        run: ls -l build/libs
-
       # Пошук згенерованого JAR-файлу
       - name: Find JAR file
         id: jar
-        run: echo "::set-output name=path::$(find build/libs -name 'BIRTHDAY-1.0.0-DEV.jar')"
+        run: |
+          FILE=$(find build/libs -name '*.jar' | head -n 1)
+          if [ -z "$FILE" ]; then
+            echo "[ERROR] JAR file not found in build/libs!"
+            exit 1
+          fi
+          echo "path=$FILE" >> $GITHUB_ENV
 
       # Отримання версії з Gradle
       - name: Extract version from build.gradle
         id: get_version
         run: |
           VERSION=$(grep "^version = " build.gradle | awk -F'=' '{print $2}' | xargs)
-          echo "plugin_version=${VERSION}" >> $GITHUB_ENV
+          if [ -z "$VERSION" ]; then
+            echo "[ERROR] Plugin version not found in build.gradle!"
+            exit 1
+          fi
+          echo "plugin_version=$VERSION" >> $GITHUB_ENV
 
       # Створення релізу
       - name: Create GitHub Release
@@ -60,6 +66,8 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ steps.jar.outputs.path }}
+          asset_path: ${{ env.path }}
           asset_name: BirthDayReload-${{ env.plugin_version }}-dev.jar
           asset_content_type: application/java-archive
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,5 +1,6 @@
 package org.referix.birthDayReload.papi;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -66,10 +67,15 @@ public class BirthdayPlaceholder extends PlaceholderExpansion {
             case "prefix" -> {
                 if (data.getPrefix() != null) {
                     Component prefixComponent = data.getPrefix();
-                    yield LegacyComponentSerializer.legacyAmpersand().serialize(prefixComponent) + "&r";
+                    // Сериализуем компонент в строку
+                    String rawPrefix = LegacyComponentSerializer.legacyAmpersand().serialize(prefixComponent);
+                    // Обрабатываем вложенные плейсхолдеры (если есть)
+                    String resolvedPrefix = PlaceholderAPI.setPlaceholders(player, rawPrefix);
+                    yield resolvedPrefix + "&r"; // Возвращаем обработанную строку
                 }
                 yield "";
             }
+
             default -> null;
         };
     }

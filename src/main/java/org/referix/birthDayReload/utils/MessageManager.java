@@ -20,6 +20,7 @@ public class MessageManager {
     public Component BIRTHDAY_DELETE_PLAYER_NOT_FOUND;
     public Component BIRTHDAY_UNKNOWN_COMMAND;
     public Component BIRTHDAY_ONLY_PLAYERS;
+    public Component BIRTHDAY_ALREADY_SET;
 
     public MessageManager(Plugin plugin) {
         this.plugin = plugin;
@@ -39,6 +40,7 @@ public class MessageManager {
         BIRTHDAY_DELETE_PLAYER_NOT_FOUND = logComponentLoad("Messages.birthday-delete-player-not-found");
         BIRTHDAY_UNKNOWN_COMMAND = logComponentLoad("Messages.birthday-unknown-command");
         BIRTHDAY_ONLY_PLAYERS = logComponentLoad("Messages.birthday-only-players");
+        BIRTHDAY_ALREADY_SET = logComponentLoad("Messages.birthday-already-set");
     }
 
     private Component logComponentLoad(String path) {

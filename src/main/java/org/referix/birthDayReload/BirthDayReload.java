@@ -4,30 +4,33 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.referix.birthDayReload.command.MainCommand;
 import org.referix.birthDayReload.database.Database;
+import org.referix.birthDayReload.inventory.PresentInventory;
 import org.referix.birthDayReload.inventory.YearInventory;
 import org.referix.birthDayReload.inventory.InventoryClickHandler;
 import org.referix.birthDayReload.inventory.InventoryManager;
 import org.referix.birthDayReload.papi.BirthdayPlaceholder;
 import org.referix.birthDayReload.utils.ConfigUtils;
+import org.referix.birthDayReload.utils.ItemManagerConfig;
 import org.referix.birthDayReload.utils.LoggerUtils;
 import org.referix.birthDayReload.utils.MessageManager;
 
 import static org.referix.birthDayReload.utils.LoggerUtils.log;
+import static org.referix.birthDayReload.utils.LoggerUtils.logWarning;
 
 public final class BirthDayReload extends JavaPlugin {
 
     private static BirthDayReload instance;
 
-    private ConfigUtils configUtils;
-
     private MessageManager messageManager;
+
+    private ItemManagerConfig itemConfig;
 
     @Override
     public void onEnable() {
         instance = this;
         log("System initialization started...");
 
-        // Ініціалізація бази даних
+        // Инициализация базы данных
         try {
             log("Starting DataBase BirthDayReload...");
             Database.getJdbi();
@@ -37,54 +40,58 @@ public final class BirthDayReload extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
-        //config load
+
+        // Загрузка конфигурации
         try {
-            this.configUtils = new ConfigUtils(this);
-            messageManager = new MessageManager(this);
-        } catch (Exception e){
+            ConfigUtils configUtils = new ConfigUtils(this);
+            this.itemConfig = new ItemManagerConfig(this); // Инициализируем здесь
+            this.messageManager = new MessageManager(this);
+            this.itemConfig = new ItemManagerConfig(this);
+            log("ItemManagerConfig initialized: " + (itemConfig != null));
+        } catch (Exception e) {
+            log("ItemManagerConfig is null: " + (itemConfig == null));
             log("Error loading config file: " + e.getMessage());
             getServer().getPluginManager().disablePlugin(this);
+            return;
         }
 
-        // Створення та реєстрація команди
+        // Регистрация инвентарей и команды
         try {
             log("Registering commands...");
 
-            // Створення інвентаря
+            // Создаем инвентари
             log("Initializing CustomInventory...");
-            YearInventory birthdayInventory = new YearInventory("Select Year your Birthday");
-            InventoryManager.registerInventory(birthdayInventory);
+            System.out.println("1");
+            PresentInventory presentInventory = new PresentInventory("Present", 45, itemConfig);
+            System.out.println("2");
+            InventoryManager.registerInventory(presentInventory);
             log("CustomInventory initialized successfully.");
 
-            // Створення та реєстрація команди
+            // Создаем и регистрируем команды
             log("Creating MainCommand instance...");
-            new MainCommand("birthday", birthdayInventory, messageManager);
+            new MainCommand("birthday", null, messageManager, presentInventory);
             log("MainCommand registered successfully as 'birthday'.");
 
             log("Commands registered successfully.");
         } catch (Exception e) {
             log("Error registering commands: " + e.getMessage());
+            e.printStackTrace();
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
 
-        // Перевірка наявності PlaceholderAPI
+        // Регистрация PlaceholderAPI
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new BirthdayPlaceholder().register();
-            getLogger().info("BirthdayPlaceholder successfully registered with PlaceholderAPI.");
+            log("BirthdayPlaceholder successfully registered with PlaceholderAPI.");
         } else {
-            getLogger().warning("PlaceholderAPI not found. BirthdayPlaceholder not registered.");
+            logWarning("PlaceholderAPI not found. BirthdayPlaceholder not registered.");
         }
 
-
-
-        // Реєстрація Listener'ів
+        // Регистрация событий
         try {
             log("Registering listeners...");
-            // Реєстрація обробника кліків
             getServer().getPluginManager().registerEvents(new InventoryClickHandler(), this);
-
-            // Створення та реєстрація кастомних інвентарів
             getServer().getPluginManager().registerEvents(new MainListener(), this);
             log("Listeners registered successfully.");
         } catch (Exception e) {
@@ -94,6 +101,7 @@ public final class BirthDayReload extends JavaPlugin {
 
         log("BirthDayReload successfully enabled!");
     }
+
 
 
     @Override
@@ -108,4 +116,5 @@ public final class BirthDayReload extends JavaPlugin {
     public static BirthDayReload getInstance() {
         return instance;
     }
+
 }

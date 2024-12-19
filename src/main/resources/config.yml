@@ -12,3 +12,5 @@ Messages:
   birthday-delete-player-not-found: "<red>Player not found.</red>"
   birthday-unknown-command: "<red>Unknown subcommand. Use <yellow>/birthday help</yellow> for more information.</red>"
   birthday-only-players: "<red>Only players can set their own birthday.</red>"
+  birthday-already-set: "<red>Your birthday is already set to: <bold>%date%</bold>. It cannot be changed.</red>"
+

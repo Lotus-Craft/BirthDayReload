@@ -8,9 +8,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.referix.birthDayReload.BirthDayReload;
+import org.referix.birthDayReload.inventory.PresentInventory;
 import org.referix.birthDayReload.inventory.YearInventory;
 import org.referix.birthDayReload.playerdata.PlayerData;
 import org.referix.birthDayReload.playerdata.PlayerManager;
+import org.referix.birthDayReload.utils.ItemManagerConfig;
 import org.referix.birthDayReload.utils.MessageManager;
 
 import java.time.LocalDate;
@@ -24,10 +26,12 @@ import static org.referix.birthDayReload.utils.LoggerUtils.*;
 public class MainCommand extends AbstractCommand {
 
     private final MessageManager messageManager;
+    InventoryCommand inventoryCommand;
 
-    public MainCommand(String command, YearInventory birthdayInventory, MessageManager messageManager) {
+    public MainCommand(String command, YearInventory birthdayInventory, MessageManager messageManager, PresentInventory presentInventory) {
         super(command);
         this.messageManager = messageManager;
+        inventoryCommand = new InventoryCommand(presentInventory);
     }
 
     @Override
@@ -54,6 +58,9 @@ public class MainCommand extends AbstractCommand {
             case "reload":
                 handleReload(sender);
                 break;
+            case "present":
+                inventoryCommand.handleInventory(sender, args);
+                break;
             default:
                 sendMessage(sender, messageManager.BIRTHDAY_UNKNOWN_COMMAND);
         }
@@ -70,6 +77,7 @@ public class MainCommand extends AbstractCommand {
 
         try {
             messageManager.reloadMessages();
+            PlayerManager.getInstance().updateBirthdayPrefixes();
             sendMessage(sender, Component.text("§aPlugin configuration and messages reloaded successfully."));
         } catch (Exception e) {
             sendMessage(sender, Component.text("§cAn error occurred while reloading the plugin. Check the console for details."));
@@ -90,12 +98,20 @@ public class MainCommand extends AbstractCommand {
             return;
         }
 
+        PlayerData data = PlayerManager.getInstance().getPlayerData(player);
+
+        // Перевірка: чи вже встановлена дата народження
+        if (data.getBirthday() != null) {
+            sendMessage(player, messageManager.BIRTHDAY_ALREADY_SET
+                    .replaceText(builder -> builder.match("%date%").replacement(data.getBirthday().toString())));
+            return;
+        }
+
         String dateInput = args[1];
 
         try {
             LocalDate birthday = LocalDate.parse(dateInput);
             if (isValidBirthday(birthday)) {
-                PlayerData data = PlayerManager.getInstance().getPlayerData(player);
                 data.setBirthday(birthday);
                 PlayerManager.getInstance().savePlayerData(player);
 
@@ -108,6 +124,7 @@ public class MainCommand extends AbstractCommand {
             sendMessage(player, messageManager.BIRTHDAY_SET_FORMAT_ERROR);
         }
     }
+
 
     private boolean isValidBirthday(LocalDate date) {
         return !date.isAfter(LocalDate.now());
@@ -190,6 +207,7 @@ public class MainCommand extends AbstractCommand {
             if (sender.hasPermission("birthday.delete")) completions.add("delete");
             if (sender.hasPermission("birthday.list")) completions.add("list");
             if (sender.hasPermission("birthday.reload")) completions.add("reload");
+            if (sender.hasPermission("birthday.inventory")) completions.add("present");
 
             return filterSuggestions(completions, args[0]);
         }
@@ -212,13 +230,33 @@ public class MainCommand extends AbstractCommand {
                     }
                     break;
 
+                case "present":
+                    if (sender.hasPermission("birthday.inventory")) {
+                        // Подкоманды для управления инвентарем
+                        completions.add("open");
+                        completions.add("save");
+                        completions.add("remove");
+                        completions.add("give");
+                    }
+                    break;
+
                 default:
                     break;
             }
         }
 
+        if (args.length == 3 && args[0].equalsIgnoreCase("present") && args[1].equalsIgnoreCase("give")) {
+            if (sender.hasPermission("birthday.inventory")) {
+                // Список игроков для передачи подарка
+                return filterSuggestions(Bukkit.getOnlinePlayers().stream()
+                        .map(Player::getName)
+                        .collect(Collectors.toList()), args[2]);
+            }
+        }
+
         return completions;
     }
+
 
     private List<String> filterSuggestions(List<String> completions, String input) {
         return completions.stream()

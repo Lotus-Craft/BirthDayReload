@@ -32,14 +32,12 @@ public class MainListener implements Listener {
         // Перевірка на день народження
         if (data.getBirthday() != null) {
             LocalDate today = LocalDate.now();
-            LocalDate birthday = data.getBirthday();
 
-            if (birthday.getDayOfMonth() == today.getDayOfMonth() && birthday.getMonth() == today.getMonth()) {
+            if (PlayerManager.getInstance().isBirthdayToday(data, today)) {
                 if (!data.isWished()) {
                     player.sendMessage("§6§lHappy Birthday, " + player.getName() + "! 🎉");
                     player.sendMessage("§aMay your day be filled with joy and celebration!");
 
-                    data.setIsWished(true); // Встановлюємо прапорець
                     log("Birthday prefix and wish set for: " + player.getName());
                 } else {
                     player.sendMessage("§eWelcome back and Happy Birthday once again! 🎂");

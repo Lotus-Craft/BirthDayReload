@@ -11,9 +11,10 @@ public class PlayerData {
 
     private Player player;
     private LocalDate birthday;
-    private boolean isWished;
-    private List<String> Wished;
 
+    private boolean isWished;
+
+    private List<String> Wished;
     private Component prefix;
 
     public PlayerData(Player player, LocalDate birthday, boolean isWished, List<String> wished , Component prefix) {
@@ -45,6 +46,7 @@ public class PlayerData {
     public boolean isWished() {
         return isWished;
     }
+
 
     public Player getPlayer() {
         return player;

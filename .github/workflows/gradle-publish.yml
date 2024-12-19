@@ -26,8 +26,13 @@ jobs:
         run: ./gradlew shadowJar
 
       # Перевірка створення JAR
-      - name: Verify JAR file
-        run: ls build/libs/*.jar
+      - name: List files in build/libs
+        run: ls -l build/libs
+
+      # Пошук згенерованого JAR-файлу
+      - name: Find JAR file
+        id: jar
+        run: echo "::set-output name=path::$(find build/libs -name 'BIRTHDAY-1.0.0-DEV.jar')"
 
       # Отримання версії з Gradle
       - name: Extract version from build.gradle
@@ -55,6 +60,6 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/libs/*.jar # Завантаження згенерованого JAR
-          asset_name: BirthDayReload-${{ env.plugin_version }}-dev.jar # Динамічна назва файлу
+          asset_path: ${{ steps.jar.outputs.path }}
+          asset_name: BirthDayReload-${{ env.plugin_version }}-dev.jar
           asset_content_type: application/java-archive

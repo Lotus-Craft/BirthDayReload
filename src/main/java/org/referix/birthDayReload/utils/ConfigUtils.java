@@ -2,7 +2,6 @@ package org.referix.birthDayReload.utils;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -39,7 +38,7 @@ public class ConfigUtils {
     }
 
     public Component getComponent(String path) {
-        return getComponent(path, "");
+        return getComponent(path, "<red>Message not found: " + path + "</red>");
     }
 
     public void reloadConfig() {
@@ -53,10 +52,6 @@ public class ConfigUtils {
         } catch (IOException e) {
             plugin.getLogger().severe("Failed to reload config: " + e.getMessage());
         }
-    }
-
-    public FileConfiguration getConfig() {
-        return config;
     }
 
     private Component parseMiniMessage(String input) {

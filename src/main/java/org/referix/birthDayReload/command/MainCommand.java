@@ -5,6 +5,9 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
+import org.referix.birthDayReload.BirthDayReload;
 import org.referix.birthDayReload.inventory.YearInventory;
 import org.referix.birthDayReload.playerdata.PlayerData;
 import org.referix.birthDayReload.playerdata.PlayerManager;
@@ -73,6 +76,7 @@ public class MainCommand extends AbstractCommand {
             logSevere(e.getMessage());
         }
     }
+
 
 
     private void handleSet(CommandSender sender, String[] args) {
@@ -185,7 +189,7 @@ public class MainCommand extends AbstractCommand {
             completions.add("set");
             if (sender.hasPermission("birthday.delete")) completions.add("delete");
             if (sender.hasPermission("birthday.list")) completions.add("list");
-            completions.add("help");
+            if (sender.hasPermission("birthday.reload")) completions.add("reload");
 
             return filterSuggestions(completions, args[0]);
         }

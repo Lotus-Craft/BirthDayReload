@@ -9,23 +9,25 @@ public class MessageManager {
     private final MiniMessage miniMessage = MiniMessage.miniMessage();
     private final Plugin plugin;
 
-    public final Component BIRTHDAY_BOY_PREFIX;
-    public final Component USER_NO_ENTER_DATA;
-    public final Component BIRTHDAY_SET_SUCCESS;
-    public final Component BIRTHDAY_SET_FUTURE_ERROR;
-    public final Component BIRTHDAY_SET_FORMAT_ERROR;
-    public final Component BIRTHDAY_DELETE_NO_PERMISSION;
-    public final Component BIRTHDAY_DELETE_USAGE;
-    public final Component BIRTHDAY_DELETE_SUCCESS;
-    public final Component BIRTHDAY_DELETE_PLAYER_NOT_FOUND;
-    public final Component BIRTHDAY_UNKNOWN_COMMAND;
-    public final Component BIRTHDAY_ONLY_PLAYERS;
+    public Component BIRTHDAY_BOY_PREFIX;
+    public Component USER_NO_ENTER_DATA;
+    public Component BIRTHDAY_SET_SUCCESS;
+    public Component BIRTHDAY_SET_FUTURE_ERROR;
+    public Component BIRTHDAY_SET_FORMAT_ERROR;
+    public Component BIRTHDAY_DELETE_NO_PERMISSION;
+    public Component BIRTHDAY_DELETE_USAGE;
+    public Component BIRTHDAY_DELETE_SUCCESS;
+    public Component BIRTHDAY_DELETE_PLAYER_NOT_FOUND;
+    public Component BIRTHDAY_UNKNOWN_COMMAND;
+    public Component BIRTHDAY_ONLY_PLAYERS;
 
     public MessageManager(Plugin plugin) {
         this.plugin = plugin;
         this.configUtils = new ConfigUtils(plugin);
+        loadMessages();
+    }
 
-        // Загружаем все сообщения из конфига
+    private void loadMessages() {
         BIRTHDAY_BOY_PREFIX = logComponentLoad("Birthday-boy-prefix");
         USER_NO_ENTER_DATA = logComponentLoad("Messages.user-no-enter-data");
         BIRTHDAY_SET_SUCCESS = logComponentLoad("Messages.birthday-set-success");
@@ -51,6 +53,7 @@ public class MessageManager {
 
     public void reloadMessages() {
         configUtils.reloadConfig();
+        loadMessages(); // Обновляем все сообщения
         plugin.getLogger().info("Messages reloaded successfully.");
     }
 }

@@ -13,6 +13,9 @@ permissions:
   birthday.use:
     description: Allow use of the /birthday command
     default: true
+  birthday.reload:
+    description: reload plugin
+    default: op
   birthday.delete:
     description: Allow deletion of birthday data
     default: op

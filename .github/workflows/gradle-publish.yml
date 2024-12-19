@@ -1,0 +1,53 @@
+name: Build and Release Plugin
+
+on:
+  push:
+    branches:
+      - dev # Виконується тільки для гілки dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Клонування репозиторію
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Налаштування JDK
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17' # Відповідає конфігурації Gradle
+
+      # Збірка проєкту Gradle
+      - name: Build with Gradle
+        run: ./gradlew shadowJar
+
+      # Перевірка створення JAR
+      - name: Verify JAR file
+        run: ls build/libs/*.jar
+
+      # Створення релізу
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: dev-${{ github.run_number }} # Унікальний тег для dev
+          release_name: Development Release ${{ github.run_number }}
+          body: |
+            Це автоматичний реліз для гілки dev.
+          draft: false
+          prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Завантаження JAR у реліз
+      - name: Upload Plugin JAR
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/libs/*-all.jar # Файл із залежностями, зібраний ShadowJar
+          asset_name: ${{ github.repository }}-dev.jar # Назва репозиторію + "dev"
+          asset_content_type: application/java-archive

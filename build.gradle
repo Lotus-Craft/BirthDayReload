@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'org.referix'
-version = '1.0-SNAPSHOT'
+version = '1.0.0-DEV'
 
 repositories {
     mavenCentral()
@@ -70,12 +70,13 @@ processResources {
 
 // ShadowJar конфігурація
 shadowJar {
-    archiveClassifier.set('') // Замінює стандартний JAR
+    archiveBaseName.set('BIRTHDAY') // Назва файлу
+    archiveVersion.set('1.0.0-DEV') // Версія файлу
+    archiveClassifier.set('') // Без класифікатора
     minimize()
     exclude 'org/sqlite/native/**'
     relocate 'org.jdbi', 'org.referix.libs.jdbi'
     relocate 'org.sqlite', 'org.referix.libs.sqlite'
 }
-
 
 build.dependsOn shadowJar

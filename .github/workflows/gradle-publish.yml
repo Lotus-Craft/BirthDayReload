@@ -29,13 +29,20 @@ jobs:
       - name: Verify JAR file
         run: ls build/libs/*.jar
 
+      # Отримання версії з Gradle
+      - name: Extract version from build.gradle
+        id: get_version
+        run: |
+          VERSION=$(grep "^version = " build.gradle | awk -F'=' '{print $2}' | xargs)
+          echo "plugin_version=${VERSION}" >> $GITHUB_ENV
+
       # Створення релізу
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
         with:
           tag_name: dev-${{ github.run_number }} # Унікальний тег для dev
-          release_name: Development Release ${{ github.run_number }}
+          release_name: BirthDayReload ${{ env.plugin_version }} DEV
           body: |
             Це автоматичний реліз для гілки dev.
           draft: false
@@ -48,6 +55,6 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/libs/*-all.jar # Файл із залежностями, зібраний ShadowJar
-          asset_name: ${{ github.repository }}-dev.jar # Назва репозиторію + "dev"
+          asset_path: build/libs/*.jar # Завантаження згенерованого JAR
+          asset_name: BirthDayReload-${{ env.plugin_version }}-dev.jar # Динамічна назва файлу
           asset_content_type: application/java-archive

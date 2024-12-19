@@ -29,7 +29,7 @@ jobs:
       - name: Find JAR file
         id: jar
         run: |
-          FILE=$(find build/libs -name 'BIRTHDAY-1.0.0-DEV.jar')
+          FILE=$(find build/libs -name '*.jar' | head -n 1)
           if [ -z "$FILE" ]; then
             echo "[ERROR] JAR file not found in build/libs!"
             exit 1

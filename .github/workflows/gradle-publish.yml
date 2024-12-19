@@ -38,7 +38,18 @@ jobs:
             echo "JAR file not found!"
             exit 1
           fi
+          echo "Found JAR file: $FILE"
           echo "path=$FILE" >> $GITHUB_ENV
+
+      # Перевірка існування JAR-файлу
+      - name: Verify JAR file existence
+        run: |
+          if [ ! -f "${{ env.path }}" ]; then
+            echo "JAR file does not exist: ${{ env.path }}"
+            exit 1
+          else
+            echo "JAR file exists: ${{ env.path }}"
+          fi
 
       # Отримання версії з Gradle
       - name: Extract version from build.gradle
@@ -49,6 +60,7 @@ jobs:
             echo "Plugin version not found!"
             exit 1
           fi
+          echo "Plugin version: $VERSION"
           echo "plugin_version=${VERSION}" >> $GITHUB_ENV
 
       # Перевірка GITHUB_TOKEN

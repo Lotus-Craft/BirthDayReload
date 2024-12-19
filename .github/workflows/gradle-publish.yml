@@ -32,13 +32,23 @@ jobs:
       # Пошук згенерованого JAR-файлу
       - name: Find JAR file
         id: jar
-        run: echo "::set-output name=path::$(find build/libs -name 'BIRTHDAY-1.0.0-DEV.jar')"
+        run: |
+          FILE=$(find build/libs -name 'BIRTHDAY-1.0.0-DEV.jar')
+          if [ -z "$FILE" ]; then
+            echo "JAR file not found!"
+            exit 1
+          fi
+          echo "path=$FILE" >> $GITHUB_ENV
 
       # Отримання версії з Gradle
       - name: Extract version from build.gradle
         id: get_version
         run: |
           VERSION=$(grep "^version = " build.gradle | awk -F'=' '{print $2}' | xargs)
+          if [ -z "$VERSION" ]; then
+            echo "Plugin version not found!"
+            exit 1
+          fi
           echo "plugin_version=${VERSION}" >> $GITHUB_ENV
 
       # Перевірка GITHUB_TOKEN
@@ -50,6 +60,13 @@ jobs:
           else
             echo "GITHUB_TOKEN is set and ready to use."
           fi
+
+      # Діагностика перед створенням релізу
+      - name: Debug Environment Variables
+        run: |
+          echo "Upload URL: ${{ steps.create_release.outputs.upload_url }}"
+          echo "Asset Path: ${{ env.path }}"
+          echo "Plugin Version: ${{ env.plugin_version }}"
 
       # Створення релізу
       - name: Create GitHub Release
@@ -70,6 +87,6 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ steps.jar.outputs.path }}
+          asset_path: ${{ env.path }}
           asset_name: BirthDayReload-${{ env.plugin_version }}-dev.jar
           asset_content_type: application/java-archive

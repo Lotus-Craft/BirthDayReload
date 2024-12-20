@@ -1,6 +1,11 @@
 Birthday-boy-prefix: "<gradient:#5a00ff:#e500ff>Birthday-boy</gradient>"
 currentDate: "Europe/Moscow" # the timezone the plugin will focus on
 
+Discord:
+  enabled: false
+  token: ""
+  channel-id: ""
+
 Messages:
   user-no-enter-data: "<red>You haven't specified your birthday. Use <yellow>/birthday set <yyyy-mm-dd></yellow></red>"
   birthday-set-success: "<green>Your birthday has been set to: <bold>%date%</bold></green>"

@@ -4,6 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.referix.birthDayReload.command.MainCommand;
 import org.referix.birthDayReload.database.Database;
+import org.referix.birthDayReload.discord.DiscordManager;
+import org.referix.birthDayReload.discord.DiscordSettings;
 import org.referix.birthDayReload.inventory.PresentInventory;
 import org.referix.birthDayReload.inventory.YearInventory;
 import org.referix.birthDayReload.inventory.InventoryClickHandler;
@@ -22,6 +24,7 @@ public final class BirthDayReload extends JavaPlugin {
     private static BirthDayReload instance;
 
     private MessageManager messageManager;
+    private DiscordManager discordManager;
 
     private ItemManagerConfig itemConfig;
 
@@ -55,15 +58,29 @@ public final class BirthDayReload extends JavaPlugin {
             return;
         }
 
+        try {
+            MessageManager messageManager = new MessageManager(this);
+
+            DiscordSettings discordSettings = new DiscordSettings(messageManager);
+            discordManager = new DiscordManager(discordSettings);
+            if (discordSettings.getIsEnabled()) {
+                discordManager.start();
+
+//                discordManager.getMessageService().sendMessage("Плагин BirthDayReload успешно запущен!");
+
+                log("The Discord bot has been successfully started");
+            }
+        } catch (Exception e) {
+            log("Error when launching the plugin: " + e.getMessage());
+        }
+
         // Регистрация инвентарей и команды
         try {
             log("Registering commands...");
 
             // Создаем инвентари
             log("Initializing CustomInventory...");
-            System.out.println("1");
             PresentInventory presentInventory = new PresentInventory("Present", 45, itemConfig);
-            System.out.println("2");
             InventoryManager.registerInventory(presentInventory);
             log("CustomInventory initialized successfully.");
 
@@ -106,7 +123,9 @@ public final class BirthDayReload extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        if (discordManager != null) {
+            discordManager.stop();
+        }
     }
 
     public MessageManager getMessageManager() {

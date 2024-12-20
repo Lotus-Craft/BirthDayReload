@@ -58,4 +58,13 @@ public class ConfigUtils {
         if (input == null) return Component.empty();
         return miniMessage.deserialize(input);
     }
+
+    public boolean getBoolean(String path, boolean defaultValue) {
+        return config.getBoolean(path, defaultValue);
+    }
+
+    public String getString(String path, String defaultValue) {
+        return config.getString(path, defaultValue);
+    }
+
 }

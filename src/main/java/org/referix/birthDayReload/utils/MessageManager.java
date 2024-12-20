@@ -9,6 +9,7 @@ public class MessageManager {
     private final MiniMessage miniMessage = MiniMessage.miniMessage();
     private final Plugin plugin;
 
+    // messages
     public Component BIRTHDAY_BOY_PREFIX;
     public Component USER_NO_ENTER_DATA;
     public Component BIRTHDAY_SET_SUCCESS;
@@ -21,6 +22,11 @@ public class MessageManager {
     public Component BIRTHDAY_UNKNOWN_COMMAND;
     public Component BIRTHDAY_ONLY_PLAYERS;
     public Component BIRTHDAY_ALREADY_SET;
+
+    // discord
+    public boolean DISCORD_ENABLED;
+    public String DISCORD_TOKEN;
+    public String DISCORD_CHANNEL_ID;
 
     public MessageManager(Plugin plugin) {
         this.plugin = plugin;
@@ -41,6 +47,10 @@ public class MessageManager {
         BIRTHDAY_UNKNOWN_COMMAND = logComponentLoad("Messages.birthday-unknown-command");
         BIRTHDAY_ONLY_PLAYERS = logComponentLoad("Messages.birthday-only-players");
         BIRTHDAY_ALREADY_SET = logComponentLoad("Messages.birthday-already-set");
+
+        DISCORD_ENABLED = configUtils.getBoolean("Discord.enabled", false);
+        DISCORD_TOKEN = configUtils.getString("Discord.token", "");
+        DISCORD_CHANNEL_ID = configUtils.getString("Discord.channel-id", "");
     }
 
     private Component logComponentLoad(String path) {

@@ -42,7 +42,7 @@ public class CustomHeadUtil {
             }
 
             // Adventure API: Устанавливаем отображаемое имя
-            meta.displayName(Component.text("Custom Head #" + number));
+            meta.displayName(Component.text("Present"));
 
             // Добавляем NamespacedKey в PersistentDataContainer
             PersistentDataContainer data = meta.getPersistentDataContainer();

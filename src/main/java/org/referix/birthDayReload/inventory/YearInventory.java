@@ -4,6 +4,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
+import org.referix.birthDayReload.BirthDayReload;
 import org.referix.birthDayReload.utils.CustomHeadUtil;
 
 import java.util.Calendar;
@@ -24,7 +25,7 @@ public class YearInventory extends BaseInventory {
     protected void setupInventory() {
         Map<Integer, String> numberTextures = CustomHeadUtil.getAllNumberTextures();
         for (Integer number : numberTextures.keySet()) {
-            ItemStack head = CustomHeadUtil.getNumberHead(number);
+            ItemStack head = CustomHeadUtil.getNumberHead(number, BirthDayReload.getInstance().getTextureKey());
             inventory.setItem(number, head); // Вставляємо голову у відповідний слот
         }
     }

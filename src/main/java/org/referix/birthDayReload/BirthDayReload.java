@@ -1,6 +1,7 @@
 package org.referix.birthDayReload;
 
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.referix.birthDayReload.command.MainCommand;
 import org.referix.birthDayReload.database.Database;
@@ -28,6 +29,8 @@ public final class BirthDayReload extends JavaPlugin {
 
     private ItemManagerConfig itemConfig;
 
+    private NamespacedKey textureKey;
+
     @Override
     public void onEnable() {
         instance = this;
@@ -35,6 +38,7 @@ public final class BirthDayReload extends JavaPlugin {
 
         // Инициализация базы данных
         try {
+            textureKey = new NamespacedKey(this, "custom_texture");
             log("Starting DataBase BirthDayReload...");
             Database.getJdbi();
             log("Database initialized successfully.");
@@ -59,6 +63,7 @@ public final class BirthDayReload extends JavaPlugin {
         }
 
         try {
+            log("Try to start Discord Bot...");
             MessageManager messageManager = new MessageManager(this);
 
             DiscordSettings discordSettings = new DiscordSettings(messageManager);
@@ -109,7 +114,7 @@ public final class BirthDayReload extends JavaPlugin {
         try {
             log("Registering listeners...");
             getServer().getPluginManager().registerEvents(new InventoryClickHandler(), this);
-            getServer().getPluginManager().registerEvents(new MainListener(), this);
+            getServer().getPluginManager().registerEvents(new MainListener(textureKey), this);
             log("Listeners registered successfully.");
         } catch (Exception e) {
             log("Error registering listeners: " + e.getMessage());
@@ -126,6 +131,10 @@ public final class BirthDayReload extends JavaPlugin {
         if (discordManager != null) {
             discordManager.stop();
         }
+    }
+
+    public NamespacedKey getTextureKey() {
+        return textureKey;
     }
 
     public MessageManager getMessageManager() {

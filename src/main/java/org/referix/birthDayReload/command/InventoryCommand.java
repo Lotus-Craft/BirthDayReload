@@ -1,12 +1,17 @@
 package org.referix.birthDayReload.command;
 
 import net.kyori.adventure.text.Component;
+import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
+import org.referix.birthDayReload.BirthDayReload;
 import org.referix.birthDayReload.inventory.PresentInventory;
 import org.referix.birthDayReload.playerdata.PlayerManager;
 import org.referix.birthDayReload.playerdata.PlayerData;
+import org.referix.birthDayReload.utils.CustomHeadUtil;
 
 import java.time.LocalDate;
 
@@ -77,11 +82,13 @@ public class InventoryCommand {
         }
 
         // Передаем предметы из инвентаря игроку
-        for (ItemStack item : presentInventory.getInventory().getContents()) {
-            if (item != null) {
-                player.getInventory().addItem(item);
-            }
-        }
+//        for (ItemStack item : presentInventory.getInventory().getContents()) {
+//            if (item != null) {
+//                player.getInventory().addItem(item);
+//            }
+//        }
+        ItemStack customHead = CustomHeadUtil.getNumberHead(1, BirthDayReload.getInstance().getTextureKey());
+        player.getInventory().addItem(customHead);
 
         // Помечаем, что игрок получил подарок
         playerData.setIsWished(true);

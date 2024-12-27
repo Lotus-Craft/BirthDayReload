@@ -1,4 +1,10 @@
 Birthday-boy-prefix: "<gradient:#5a00ff:#e500ff>Birthday-boy</gradient>"
+# - MM-dd (example: 12-31)
+# - MM.dd (example: 12.31)
+# - yyyy-MM-dd (example: 2000-12-31)
+# - yyyy.MM.dd (example: 2000.12.31)
+Format-Data: "MM-dd"
+
 currentDate: "Europe/Moscow" # the timezone the plugin will focus on
 
 Discord:
@@ -10,7 +16,7 @@ Messages:
   user-no-enter-data: "<red>You haven't specified your birthday. Use <yellow>/birthday set <yyyy-mm-dd></yellow></red>"
   birthday-set-success: "<green>Your birthday has been set to: <bold>%date%</bold></green>"
   birthday-set-future-error: "<red>Invalid date. The birthday cannot be in the future.</red>"
-  birthday-set-format-error: "<red>Invalid date format. Use <bold>yyyy-mm-dd</bold>.</red>"
+  birthday-set-format-error: "<red>Invalid date format. Use <bold>%data%</bold>.</red>"
   birthday-delete-no-permission: "<red>You don't have permission to use this command.</red>"
   birthday-delete-usage: "<red>Usage: /birthday delete <player name></red>"
   birthday-delete-success: "<green>Birthday data for <bold>%player%</bold> has been deleted.</green>"

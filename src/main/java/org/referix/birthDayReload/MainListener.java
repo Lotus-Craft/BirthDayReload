@@ -123,7 +123,7 @@ public class MainListener implements Listener {
 
             if (data.has(textureKey, PersistentDataType.STRING)) {
                 Player player = event.getPlayer();
-
+                event.setDropItems(false);
                 for (ItemStack item : InventoryManager.getInventory("Present").getInventory().getContents()) {
                     if (item != null) {
                         player.getInventory().addItem(item);

@@ -16,6 +16,7 @@ import org.referix.birthDayReload.utils.ItemManagerConfig;
 import org.referix.birthDayReload.utils.MessageManager;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -94,41 +95,50 @@ public class MainCommand extends AbstractCommand {
         }
 
         if (args.length != 2) {
-            sendMessage(player, messageManager.BIRTHDAY_SET_FORMAT_ERROR);
+            sendMessage(player, messageManager.BIRTHDAY_SET_FORMAT_ERROR
+                    .replaceText(builder -> builder.match("%date%").replacement(messageManager.getDateFormat())));
             return;
         }
 
         PlayerData data = PlayerManager.getInstance().getPlayerData(player);
 
-        // Перевірка: чи вже встановлена дата народження
         if (data.getBirthday() != null) {
             sendMessage(player, messageManager.BIRTHDAY_ALREADY_SET
-                    .replaceText(builder -> builder.match("%date%").replacement(data.getBirthday().toString())));
+                    .replaceText(builder -> builder.match("%date%")
+                            .replacement(messageManager.formatDate(data.getBirthday()))));
             return;
         }
 
         String dateInput = args[1];
 
         try {
-            LocalDate birthday = LocalDate.parse(dateInput);
+            LocalDate birthday = messageManager.parseDate(dateInput);
             if (isValidBirthday(birthday)) {
                 data.setBirthday(birthday);
                 PlayerManager.getInstance().savePlayerData(player);
 
                 sendMessage(player, messageManager.BIRTHDAY_SET_SUCCESS
-                        .replaceText(builder -> builder.match("%date%").replacement(birthday.toString())));
+                        .replaceText(builder -> builder.match("%date%")
+                                .replacement(messageManager.formatDate(birthday))));
             } else {
                 sendMessage(player, messageManager.BIRTHDAY_SET_FUTURE_ERROR);
             }
-        } catch (Exception e) {
-            sendMessage(player, messageManager.BIRTHDAY_SET_FORMAT_ERROR);
+        } catch (DateTimeParseException e) {
+            sendMessage(player, messageManager.BIRTHDAY_SET_FORMAT_ERROR
+                    .replaceText(builder -> builder.match("%date%").replacement(messageManager.getDateFormat())));
         }
     }
 
 
+
     private boolean isValidBirthday(LocalDate date) {
+        // Дата має бути сьогодні або в минулому
         return !date.isAfter(LocalDate.now());
     }
+
+
+
+
 
     private void handleDelete(CommandSender sender, String[] args) {
         if (!sender.hasPermission("birthday.delete")) {
@@ -217,9 +227,10 @@ public class MainCommand extends AbstractCommand {
 
             switch (subCommand) {
                 case "set":
-                    // Предлагаем пример формата даты
-                    completions.add("yyyy-mm-dd");
+                    // Підказка для команди "set"
+                    completions.add(messageManager.getDateFormat());
                     break;
+
 
                 case "delete":
                     if (sender.hasPermission("birthday.delete")) {

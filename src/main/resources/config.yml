@@ -7,6 +7,11 @@ Format-Data: "MM-dd"
 
 currentDate: "Europe/Moscow" # the timezone the plugin will focus on
 
+birthday-luckPerm:
+  enable: false # to use need the setup LuckPerm
+  group: "birthday-vip" # group luck perm
+  time: 7d # time (d - day, h - hour, w - week , mo, y)
+
 Discord:
   enabled: false
   token: ""
@@ -24,4 +29,6 @@ Messages:
   birthday-unknown-command: "<red>Unknown subcommand. Use <yellow>/birthday help</yellow> for more information.</red>"
   birthday-only-players: "<red>Only players can set their own birthday.</red>"
   birthday-already-set: "<red>Your birthday is already set to: <bold>%date%</bold>. It cannot be changed.</red>"
+  birthday-luckperm-message: "<green>Congratulations! <bold>You have received a donation gift: <gold>VIP group</gold>!</bold></green> <yellow>Enjoy your special perks!</yellow>"
+
 

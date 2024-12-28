@@ -1,5 +1,7 @@
 package org.referix.birthDayReload;
 
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.LuckPermsProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -16,6 +18,7 @@ import org.referix.birthDayReload.utils.ConfigUtils;
 import org.referix.birthDayReload.utils.ItemManagerConfig;
 import org.referix.birthDayReload.utils.LoggerUtils;
 import org.referix.birthDayReload.utils.MessageManager;
+import org.referix.birthDayReload.utils.luckperm.LuckPerm;
 
 import static org.referix.birthDayReload.utils.LoggerUtils.log;
 import static org.referix.birthDayReload.utils.LoggerUtils.logWarning;
@@ -28,6 +31,8 @@ public final class BirthDayReload extends JavaPlugin {
     private DiscordManager discordManager;
 
     private ItemManagerConfig itemConfig;
+
+    private LuckPerm luckPermUtils;
 
     private NamespacedKey textureKey;
 
@@ -62,10 +67,17 @@ public final class BirthDayReload extends JavaPlugin {
             return;
         }
 
+        // Проверяем, доступен ли LuckPerms API
+        try {
+            LuckPerms luckPerms = LuckPermsProvider.get();
+            getLogger().info("LuckPerms detected. Enabling related features.");
+            this.luckPermUtils = new LuckPerm(luckPerms,messageManager);
+        } catch (Exception e) {
+            this.luckPermUtils = null;
+        }
+
         try {
             log("Try to start Discord Bot...");
-            MessageManager messageManager = new MessageManager(this);
-
             DiscordSettings discordSettings = new DiscordSettings(messageManager);
             discordManager = new DiscordManager(discordSettings);
             if (discordSettings.getIsEnabled()) {
@@ -114,7 +126,7 @@ public final class BirthDayReload extends JavaPlugin {
         try {
             log("Registering listeners...");
             getServer().getPluginManager().registerEvents(new InventoryClickHandler(), this);
-            getServer().getPluginManager().registerEvents(new MainListener(textureKey), this);
+            getServer().getPluginManager().registerEvents(new MainListener(textureKey,luckPermUtils,messageManager), this);
             log("Listeners registered successfully.");
         } catch (Exception e) {
             log("Error registering listeners: " + e.getMessage());
@@ -131,6 +143,10 @@ public final class BirthDayReload extends JavaPlugin {
         if (discordManager != null) {
             discordManager.stop();
         }
+    }
+
+    public LuckPerm getLuckPermUtils() {
+        return this.luckPermUtils;
     }
 
     public NamespacedKey getTextureKey() {

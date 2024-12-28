@@ -3,6 +3,8 @@ version: '1.0-SNAPSHOT'
 main: org.referix.birthDayReload.BirthDayReload
 api-version: '1.20'
 depend: [PlaceholderAPI]
+softdepend:
+  - LuckPerms
 commands:
   birthday:
     description: Manage birthdays.

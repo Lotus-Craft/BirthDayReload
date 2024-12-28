@@ -1,7 +1,6 @@
 package org.referix.birthDayReload;
 
 
-import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Skull;
@@ -21,6 +20,8 @@ import org.bukkit.persistence.PersistentDataType;
 import org.referix.birthDayReload.inventory.InventoryManager;
 import org.referix.birthDayReload.playerdata.PlayerData;
 import org.referix.birthDayReload.playerdata.PlayerManager;
+import org.referix.birthDayReload.utils.MessageManager;
+import org.referix.birthDayReload.utils.luckperm.LuckPerm;
 
 import java.time.LocalDate;
 
@@ -29,9 +30,13 @@ import static org.referix.birthDayReload.utils.LoggerUtils.log;
 public class MainListener implements Listener {
 
     private final NamespacedKey textureKey;
+    private final LuckPerm luckPerm;
+    private final MessageManager messageManager;
 
-    public MainListener(NamespacedKey textureKey) {
+    public MainListener(NamespacedKey textureKey, LuckPerm luckPerm, MessageManager messageManager) {
         this.textureKey = textureKey;
+        this.luckPerm = luckPerm;
+        this.messageManager = messageManager;
     }
 
     @EventHandler
@@ -57,11 +62,8 @@ public class MainListener implements Listener {
                 if (!data.isWished()) {
                     player.sendMessage("§6§lHappy Birthday, " + player.getName() + "! 🎉");
                     player.sendMessage("§aMay your day be filled with joy and celebration!");
-
+                    // Perms Luck
                     log("Birthday prefix and wish set for: " + player.getName());
-                } else {
-                    player.sendMessage("§eWelcome back and Happy Birthday once again! 🎂");
-                    manager.savePlayerData(player); // Зберігаємо дані
                 }
                 data.setPrefix(BirthDayReload.getInstance().getMessageManager().BIRTHDAY_BOY_PREFIX); // Встановлюємо префікс
             } else {
@@ -116,7 +118,11 @@ public class MainListener implements Listener {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         Block block = event.getBlock();
-
+        if (luckPerm != null) {
+            Player player = event.getPlayer();
+            luckPerm.applyLuckPermGroup(player);
+            player.sendMessage(messageManager.BIRTHDAY_LUCKPERMS_MESSAGE);
+        }
         if (block.getType() == Material.PLAYER_HEAD || block.getType() == Material.PLAYER_WALL_HEAD) {
             Skull skull = (Skull) block.getState();
             PersistentDataContainer data = skull.getPersistentDataContainer();

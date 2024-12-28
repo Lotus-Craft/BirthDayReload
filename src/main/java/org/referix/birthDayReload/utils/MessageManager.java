@@ -1,7 +1,6 @@
 package org.referix.birthDayReload.utils;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.plugin.Plugin;
 
 import java.time.LocalDate;
@@ -25,6 +24,12 @@ public class MessageManager {
     public Component BIRTHDAY_UNKNOWN_COMMAND;
     public Component BIRTHDAY_ONLY_PLAYERS;
     public Component BIRTHDAY_ALREADY_SET;
+    public Component BIRTHDAY_LUCKPERMS_MESSAGE;
+    //LuckPerm
+    public boolean LUCK_PERM_ENABLED;
+    public String LUCK_PERM_GROUP;
+    public String LUCK_PERM_TIME;
+
 
     // Date format
     private String dateFormat;
@@ -55,9 +60,16 @@ public class MessageManager {
         BIRTHDAY_ONLY_PLAYERS = logComponentLoad("Messages.birthday-only-players");
         BIRTHDAY_ALREADY_SET = logComponentLoad("Messages.birthday-already-set");
 
+        BIRTHDAY_LUCKPERMS_MESSAGE = logComponentLoad("Messages.birthday-luckperm-message");
+
         // Зчитування формату дати з конфігурації
         dateFormat = configUtils.getString("Format-Data", "yyyy-MM-dd");
         updateDateFormatter();
+
+        //luckperms
+        LUCK_PERM_ENABLED = configUtils.getBoolean("birthday-luckPerm.enable", false);
+        LUCK_PERM_GROUP = configUtils.getString("birthday-luckPerm.group", "");
+        LUCK_PERM_TIME = configUtils.getString("birthday-luckPerm.time", "1d");
 
         DISCORD_ENABLED = configUtils.getBoolean("Discord.enabled", false);
         DISCORD_TOKEN = configUtils.getString("Discord.token", "");

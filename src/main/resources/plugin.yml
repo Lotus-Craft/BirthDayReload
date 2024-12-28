@@ -24,14 +24,11 @@ permissions:
   birthday.list:
     description: Allow listing all birthday data
     default: op
+  birthday.present:
+    description: Allow present command
+    default: op
   birthday.present.open:
     description: Allow adding items to the birthday present
-    default: op
-  birthday.present.save:
-    description: Allow saving the birthday present
-    default: op
-  birthday.present.remove:
-    description: Allow removing items from the birthday present
     default: op
   birthday.present.give:
     description: Allow giving the birthday present to a player

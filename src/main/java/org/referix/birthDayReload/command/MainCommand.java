@@ -217,7 +217,7 @@ public class MainCommand extends AbstractCommand {
             if (sender.hasPermission("birthday.delete")) completions.add("delete");
             if (sender.hasPermission("birthday.list")) completions.add("list");
             if (sender.hasPermission("birthday.reload")) completions.add("reload");
-            if (sender.hasPermission("birthday.inventory")) completions.add("present");
+            if (sender.hasPermission("birthday.present")) completions.add("present");
 
             return filterSuggestions(completions, args[0]);
         }
@@ -242,12 +242,10 @@ public class MainCommand extends AbstractCommand {
                     break;
 
                 case "present":
-                    if (sender.hasPermission("birthday.inventory")) {
+                    if (sender.hasPermission("birthday.present")) {
                         // Подкоманды для управления инвентарем
-                        completions.add("open");
-                        completions.add("save");
-                        completions.add("remove");
-                        completions.add("give");
+                        if(sender.hasPermission("birthday.present.open")) completions.add("open");
+                        if(sender.hasPermission("birthday.present.give")) completions.add("give");
                     }
                     break;
 

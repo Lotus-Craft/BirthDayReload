@@ -1,12 +1,9 @@
 package org.referix.birthDayReload.command;
 
 import net.kyori.adventure.text.Component;
-import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 import org.referix.birthDayReload.BirthDayReload;
 import org.referix.birthDayReload.inventory.PresentInventory;
 import org.referix.birthDayReload.playerdata.PlayerManager;
@@ -29,7 +26,7 @@ public class InventoryCommand {
             return;
         }
 
-        if (!player.hasPermission("birthday.inventory")) {
+        if (!player.hasPermission("birthday.present")) {
             sendMessage(player, Component.text("§cYou don't have permission to use this command."));
             return;
         }

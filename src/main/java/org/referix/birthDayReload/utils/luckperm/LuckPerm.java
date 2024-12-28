@@ -36,18 +36,19 @@ public class LuckPerm {
         }
         if (!messageManager.LUCK_PERM_ENABLED) {
             return;
+        } else {
+            String group = messageManager.LUCK_PERM_GROUP;
+            String time = messageManager.LUCK_PERM_TIME;
+
+            if (group == null || group.isEmpty()) {
+                return;
+            }
+
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                addGroupWithConfigTime(player, group, time);
+            });
         }
 
-        String group = messageManager.LUCK_PERM_GROUP;
-        String time = messageManager.LUCK_PERM_TIME;
-
-        if (group == null || group.isEmpty()) {
-            return;
-        }
-
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            addGroupWithConfigTime(player, group, time);
-        });
     }
 
     /**

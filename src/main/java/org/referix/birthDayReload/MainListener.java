@@ -118,11 +118,6 @@ public class MainListener implements Listener {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         Block block = event.getBlock();
-        if (luckPerm != null) {
-            Player player = event.getPlayer();
-            luckPerm.applyLuckPermGroup(player);
-            player.sendMessage(messageManager.BIRTHDAY_LUCKPERMS_MESSAGE);
-        }
         if (block.getType() == Material.PLAYER_HEAD || block.getType() == Material.PLAYER_WALL_HEAD) {
             Skull skull = (Skull) block.getState();
             PersistentDataContainer data = skull.getPersistentDataContainer();
@@ -134,6 +129,10 @@ public class MainListener implements Listener {
                     if (item != null) {
                         player.getInventory().addItem(item);
                     }
+                }
+                if (luckPerm != null) {
+                    luckPerm.applyLuckPermGroup(player);
+                    player.sendMessage(messageManager.BIRTHDAY_LUCKPERMS_MESSAGE);
                 }
                 Location center = block.getLocation().add(0.5, 0.5, 0.5);
 

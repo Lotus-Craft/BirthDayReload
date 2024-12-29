@@ -42,8 +42,13 @@ dependencies {
     runtimeOnly 'org.slf4j:slf4j-api:2.0.7'
 
     // JDA
-    implementation("net.dv8tion:JDA:5.0.0-beta.22")
-
+    implementation("net.dv8tion:JDA:5.0.0-beta.22") {
+        exclude group: "com.fasterxml.jackson.core" // Убираем JSON обработчик
+        exclude group: "com.squareup.okhttp3"       // Убираем HTTP-клиент, если не используете REST
+        exclude group: "org.apache.commons"         // Commons Utils
+        exclude module: "opus-java"                 // Убираем аудио
+        exclude group: "org.slf4j"                  // Если используете другой логгер
+    }
 }
 
 def targetJavaVersion = 17

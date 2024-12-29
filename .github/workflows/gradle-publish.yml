@@ -1,66 +1,59 @@
 name: Build and Release Plugin
 
+description: CI/CD pipeline for building and releasing the BirthDayReload plugin.
+
 on:
   push:
     branches:
-      - dev # Виконується тільки для гілки dev
+      - dev # Trigger only for the 'dev' branch
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      # Клонування репозиторію
-      - name: Checkout repository
+      # Step 1: Clone the repository
+      - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # Налаштування JDK
-      - name: Set up JDK
+      # Step 2: Set up the Java Development Kit (JDK)
+      - name: Set Up JDK
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '17' # Відповідає конфігурації Gradle
+          java-version: '17' # Matches Gradle configuration
 
-      # Збірка проєкту Gradle
+      # Step 3: Build the plugin using Gradle
       - name: Build with Gradle
         run: ./gradlew shadowJar
 
-      # Пошук згенерованого JAR-файлу
-      - name: Find JAR file
-        id: jar
+      # Step 4: Extract the commit message to use as version/tag
+      - name: Get Commit Message
+        id: commit_message
+        run: |
+          COMMIT_MSG=$(git log -1 --pretty=format:"%s")
+          echo "commit_message=$COMMIT_MSG" >> $GITHUB_ENV
+
+      # Step 5: Rename the JAR file to match the commit message
+      - name: Rename JAR File
+        id: rename_jar
         run: |
           FILE=$(find build/libs -name '*.jar' | head -n 1)
           if [ -z "$FILE" ]; then
             echo "[ERROR] JAR file not found in build/libs!"
             exit 1
           fi
-          echo "path=$FILE" >> $GITHUB_ENV
+          NEW_NAME="${{ env.commit_message }}.jar"
+          mv "$FILE" "build/libs/$NEW_NAME"
+          echo "path=build/libs/$NEW_NAME" >> $GITHUB_ENV
 
-      # Отримання версії з Gradle
-      - name: Extract version from build.gradle
-        id: get_version
-        run: |
-          VERSION=$(grep "^version = " build.gradle | awk -F'=' '{print $2}' | xargs)
-          if [ -z "$VERSION" ]; then
-            echo "[ERROR] Plugin version not found in build.gradle!"
-            exit 1
-          fi
-          echo "plugin_version=$VERSION" >> $GITHUB_ENV
-
-      # Отримання повідомлення останнього коміту
-      - name: Get Commit Message
-        id: commit_message
-        run: |
-          COMMIT_MSG=$(git log -1 --pretty=format:"%s" | sed 's/[^a-zA-Z0-9_-]/_/g')
-          echo "commit_message=$COMMIT_MSG" >> $GITHUB_ENV
-
-      # Створення релізу
+      # Step 6: Create a GitHub release
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
         with:
-          tag_name: ${{ env.commit_message }} # Унікальний тег для dev
-          release_name: BirthDayReload ${{ env.commit_message }}
+          tag_name: dev # Simple and consistent tag
+          release_name: ${{ env.commit_message }}
           body: |
             This is an experimental release of the development branch. It is intended for testing purposes and may include incomplete features or bugs. Please use it with caution and provide feedback if you encounter any issues.
           draft: false
@@ -68,7 +61,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Завантаження JAR у реліз
+      # Step 7: Upload the JAR file to the release
       - name: Upload Plugin JAR
         uses: actions/upload-release-asset@v1
         with:

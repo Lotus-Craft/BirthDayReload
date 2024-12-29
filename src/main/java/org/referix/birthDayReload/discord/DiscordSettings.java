@@ -1,6 +1,6 @@
 package org.referix.birthDayReload.discord;
 
-import org.referix.birthDayReload.utils.MessageManager;
+import org.referix.birthDayReload.utils.configmannagers.MessageManager;
 
 public class DiscordSettings {
     private final String token;

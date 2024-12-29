@@ -10,14 +10,12 @@ import org.referix.birthDayReload.database.Database;
 import org.referix.birthDayReload.discord.DiscordManager;
 import org.referix.birthDayReload.discord.DiscordSettings;
 import org.referix.birthDayReload.inventory.PresentInventory;
-import org.referix.birthDayReload.inventory.YearInventory;
 import org.referix.birthDayReload.inventory.InventoryClickHandler;
 import org.referix.birthDayReload.inventory.InventoryManager;
 import org.referix.birthDayReload.papi.BirthdayPlaceholder;
-import org.referix.birthDayReload.utils.ConfigUtils;
-import org.referix.birthDayReload.utils.ItemManagerConfig;
-import org.referix.birthDayReload.utils.LoggerUtils;
-import org.referix.birthDayReload.utils.MessageManager;
+import org.referix.birthDayReload.utils.configmannagers.ConfigUtils;
+import org.referix.birthDayReload.utils.configmannagers.ItemManagerConfig;
+import org.referix.birthDayReload.utils.configmannagers.MessageManager;
 import org.referix.birthDayReload.utils.luckperm.LuckPerm;
 
 import static org.referix.birthDayReload.utils.LoggerUtils.log;

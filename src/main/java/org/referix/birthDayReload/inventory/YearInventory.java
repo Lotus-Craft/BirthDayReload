@@ -5,7 +5,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
 import org.referix.birthDayReload.BirthDayReload;
-import org.referix.birthDayReload.utils.CustomHeadUtil;
+import org.referix.birthDayReload.utils.headutils.CustomHeadUtil;
 
 import java.util.Calendar;
 import java.util.LinkedList;

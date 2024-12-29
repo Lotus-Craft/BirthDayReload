@@ -1,4 +1,4 @@
-package org.referix.birthDayReload.utils;
+package org.referix.birthDayReload.utils.configmannagers;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;

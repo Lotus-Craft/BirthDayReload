@@ -5,15 +5,11 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginManager;
-import org.referix.birthDayReload.BirthDayReload;
 import org.referix.birthDayReload.inventory.PresentInventory;
 import org.referix.birthDayReload.inventory.YearInventory;
 import org.referix.birthDayReload.playerdata.PlayerData;
 import org.referix.birthDayReload.playerdata.PlayerManager;
-import org.referix.birthDayReload.utils.ItemManagerConfig;
-import org.referix.birthDayReload.utils.MessageManager;
+import org.referix.birthDayReload.utils.configmannagers.MessageManager;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;

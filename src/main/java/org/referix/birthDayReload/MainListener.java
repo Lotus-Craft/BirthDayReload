@@ -20,7 +20,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.referix.birthDayReload.inventory.InventoryManager;
 import org.referix.birthDayReload.playerdata.PlayerData;
 import org.referix.birthDayReload.playerdata.PlayerManager;
-import org.referix.birthDayReload.utils.MessageManager;
+import org.referix.birthDayReload.utils.configmannagers.MessageManager;
 import org.referix.birthDayReload.utils.luckperm.LuckPerm;
 
 import java.time.LocalDate;

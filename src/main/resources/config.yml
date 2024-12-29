@@ -5,7 +5,7 @@ Birthday-boy-prefix: "<gradient:#5a00ff:#e500ff>Birthday-boy</gradient>"
 # - yyyy.MM.dd (example: 2000.12.31)
 Format-Data: "MM-dd"
 
-currentDate: "Europe/Moscow" # the timezone the plugin will focus on
+currentDate: "Europe/Kiev" # the timezone the plugin will focus on
 
 birthday-luckPerm:
   enable: false # to use need the setup LuckPerm

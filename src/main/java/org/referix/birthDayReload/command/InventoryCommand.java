@@ -8,7 +8,7 @@ import org.referix.birthDayReload.BirthDayReload;
 import org.referix.birthDayReload.inventory.PresentInventory;
 import org.referix.birthDayReload.playerdata.PlayerManager;
 import org.referix.birthDayReload.playerdata.PlayerData;
-import org.referix.birthDayReload.utils.CustomHeadUtil;
+import org.referix.birthDayReload.utils.headutils.CustomHeadUtil;
 
 import java.time.LocalDate;
 

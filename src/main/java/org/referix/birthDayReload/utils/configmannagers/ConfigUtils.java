@@ -1,4 +1,4 @@
-package org.referix.birthDayReload.utils;
+package org.referix.birthDayReload.utils.configmannagers;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;

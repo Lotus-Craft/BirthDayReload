@@ -7,7 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.referix.birthDayReload.BirthDayReload;
-import org.referix.birthDayReload.utils.MessageManager;
+import org.referix.birthDayReload.utils.configmannagers.MessageManager;
 
 import java.time.Duration;
 import java.util.UUID;

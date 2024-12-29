@@ -36,17 +36,6 @@ jobs:
           fi
           echo "path=$FILE" >> $GITHUB_ENV
 
-      # Отримання версії з Gradle
-      - name: Extract version from build.gradle
-        id: get_version
-        run: |
-          VERSION=$(grep "^version = " build.gradle | awk -F'=' '{print $2}' | xargs)
-          if [ -z "$VERSION" ]; then
-            echo "[ERROR] Plugin version not found in build.gradle!"
-            exit 1
-          fi
-          echo "plugin_version=$VERSION" >> $GITHUB_ENV
-
       # Отримання повідомлення останнього коміту
       - name: Get Commit Message
         id: commit_message
@@ -59,8 +48,8 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         with:
-          tag_name: dev-${{ env.commit_message }} # Унікальний тег для dev
-          release_name: BirthDayReload ${{ env.plugin_version }} - ${{ env.commit_message }}
+          tag_name: ${{ env.commit_message }} # Унікальний тег для dev
+          release_name: ${{ env.commit_message }}
           body: |
             This is an experimental release of the development branch. It is intended for testing purposes and may include incomplete features or bugs. Please use it with caution and provide feedback if you encounter any issues.
           draft: false
@@ -74,7 +63,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ${{ env.path }}
-          asset_name: BirthDayReload-${{ env.plugin_version }}-${{ env.commit_message }}.jar
+          asset_name: ${{ env.commit_message }}.jar
           asset_content_type: application/java-archive
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

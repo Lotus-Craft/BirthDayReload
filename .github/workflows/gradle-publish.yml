@@ -25,23 +25,25 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew shadowJar
 
-      # Пошук згенерованого JAR-файлу
-      - name: Find JAR file
-        id: jar
-        run: |
-          FILE=$(find build/libs -name '*.jar' | head -n 1)
-          if [ -z "$FILE" ]; then
-            echo "[ERROR] JAR file not found in build/libs!"
-            exit 1
-          fi
-          echo "path=$FILE" >> $GITHUB_ENV
-
       # Отримання повідомлення останнього коміту
       - name: Get Commit Message
         id: commit_message
         run: |
           COMMIT_MSG=$(git log -1 --pretty=format:"%s" | sed 's/[^a-zA-Z0-9_-]/_/g')
           echo "commit_message=$COMMIT_MSG" >> $GITHUB_ENV
+
+      # Пошук згенерованого JAR-файлу
+      - name: Rename JAR File to Commit Message
+        id: rename_jar
+        run: |
+          FILE=$(find build/libs -name '*.jar' | head -n 1)
+          if [ -z "$FILE" ]; then
+            echo "[ERROR] JAR file not found in build/libs!"
+            exit 1
+          fi
+          NEW_NAME="${{ env.commit_message }}.jar"
+          mv "$FILE" "build/libs/$NEW_NAME"
+          echo "path=build/libs/$NEW_NAME" >> $GITHUB_ENV
 
       # Створення релізу
       - name: Create GitHub Release

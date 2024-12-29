@@ -25,6 +25,28 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew shadowJar
 
+      # Пошук згенерованого JAR-файлу
+      - name: Find JAR file
+        id: jar
+        run: |
+          FILE=$(find build/libs -name '*.jar' | head -n 1)
+          if [ -z "$FILE" ]; then
+            echo "[ERROR] JAR file not found in build/libs!"
+            exit 1
+          fi
+          echo "path=$FILE" >> $GITHUB_ENV
+
+      # Отримання версії з Gradle
+      - name: Extract version from build.gradle
+        id: get_version
+        run: |
+          VERSION=$(grep "^version = " build.gradle | awk -F'=' '{print $2}' | xargs)
+          if [ -z "$VERSION" ]; then
+            echo "[ERROR] Plugin version not found in build.gradle!"
+            exit 1
+          fi
+          echo "plugin_version=$VERSION" >> $GITHUB_ENV
+
       # Отримання повідомлення останнього коміту
       - name: Get Commit Message
         id: commit_message
@@ -32,26 +54,13 @@ jobs:
           COMMIT_MSG=$(git log -1 --pretty=format:"%s" | sed 's/[^a-zA-Z0-9_-]/_/g')
           echo "commit_message=$COMMIT_MSG" >> $GITHUB_ENV
 
-      # Пошук згенерованого JAR-файлу
-      - name: Rename JAR File to Commit Message
-        id: rename_jar
-        run: |
-          FILE=$(find build/libs -name '*.jar' | head -n 1)
-          if [ -z "$FILE" ]; then
-            echo "[ERROR] JAR file not found in build/libs!"
-            exit 1
-          fi
-          NEW_NAME="${{ env.commit_message }}.jar"
-          mv "$FILE" "build/libs/$NEW_NAME"
-          echo "path=build/libs/$NEW_NAME" >> $GITHUB_ENV
-
       # Створення релізу
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
         with:
           tag_name: ${{ env.commit_message }} # Унікальний тег для dev
-          release_name: ${{ env.commit_message }}
+          release_name: BirthDayReload ${{ env.commit_message }}
           body: |
             This is an experimental release of the development branch. It is intended for testing purposes and may include incomplete features or bugs. Please use it with caution and provide feedback if you encounter any issues.
           draft: false

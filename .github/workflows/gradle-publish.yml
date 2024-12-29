@@ -51,7 +51,7 @@ jobs:
       - name: Get Commit Message
         id: commit_message
         run: |
-          COMMIT_MSG=$(git log -1 --pretty=format:"%s")
+          COMMIT_MSG=$(git log -1 --pretty=format:"%s" | sed 's/[^a-zA-Z0-9_-]/_/g')
           echo "commit_message=$COMMIT_MSG" >> $GITHUB_ENV
 
       # Створення релізу

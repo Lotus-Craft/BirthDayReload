@@ -59,8 +59,8 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         with:
-          tag_name: dev-${{ github.run_number }} # Унікальний тег для dev
-          release_name: BirthDayReload ${{ env.plugin_version }} DEV
+          tag_name: dev-${{ env.commit_message }} # Унікальний тег для dev
+          release_name: BirthDayReload ${{ env.plugin_version }} - ${{ env.commit_message }}
           body: |
             This is an experimental release of the development branch. It is intended for testing purposes and may include incomplete features or bugs. Please use it with caution and provide feedback if you encounter any issues.
           draft: false

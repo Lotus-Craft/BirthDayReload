@@ -1,6 +1,5 @@
 name: Build and Release Plugin
 
-description: CI/CD pipeline for building and releasing the BirthDayReload plugin.
 
 on:
   push:
@@ -27,12 +26,18 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew shadowJar
 
-      # Step 4: Extract the commit message to use as version/tag
-      - name: Get Commit Message
-        id: commit_message
+      # Step 4: Extract commit message and parse tag
+      - name: Parse Commit Message for Tag
+        id: parse_commit_message
         run: |
           COMMIT_MSG=$(git log -1 --pretty=format:"%s")
           echo "commit_message=$COMMIT_MSG" >> $GITHUB_ENV
+          if [[ "$COMMIT_MSG" =~ \[(.+)\] ]]; then
+            TAG_NAME="${BASH_REMATCH[1]}"
+          else
+            TAG_NAME="default-tag"
+          fi
+          echo "tag_name=$TAG_NAME" >> $GITHUB_ENV
 
       # Step 5: Rename the JAR file to match the commit message
       - name: Rename JAR File
@@ -52,7 +57,7 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         with:
-          tag_name: dev # Simple and consistent tag
+          tag_name: ${{ env.tag_name }}
           release_name: ${{ env.commit_message }}
           body: |
             This is an experimental release of the development branch. It is intended for testing purposes and may include incomplete features or bugs. Please use it with caution and provide feedback if you encounter any issues.

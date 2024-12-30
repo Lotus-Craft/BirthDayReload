@@ -5,6 +5,8 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.referix.birthDayReload.discord.services.DiscordMessage;
+import org.referix.birthDayReload.discord.services.MessageService;
 import org.referix.birthDayReload.inventory.PresentInventory;
 import org.referix.birthDayReload.inventory.YearInventory;
 import org.referix.birthDayReload.playerdata.PlayerData;
@@ -16,6 +18,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Map;
 
 import static org.referix.birthDayReload.utils.LoggerUtils.*;
 
@@ -23,11 +26,13 @@ import static org.referix.birthDayReload.utils.LoggerUtils.*;
 public class MainCommand extends AbstractCommand {
 
     private final MessageManager messageManager;
+    private final MessageService messageService;
     InventoryCommand inventoryCommand;
 
-    public MainCommand(String command, YearInventory birthdayInventory, MessageManager messageManager, PresentInventory presentInventory) {
+    public MainCommand(String command, YearInventory birthdayInventory, MessageManager messageManager, MessageService messageService, PresentInventory presentInventory) {
         super(command);
         this.messageManager = messageManager;
+        this.messageService = messageService;
         inventoryCommand = new InventoryCommand(presentInventory);
     }
 
@@ -116,6 +121,15 @@ public class MainCommand extends AbstractCommand {
                 sendMessage(player, messageManager.BIRTHDAY_SET_SUCCESS
                         .replaceText(builder -> builder.match("%date%")
                                 .replacement(messageManager.formatDate(birthday))));
+
+                Map<String, String> placeholders = Map.of(
+                        "player", player.getName(),
+                        "wishes", data.getWished().toString(),
+                        "date", data.getBirthday().toString()
+                );
+
+                DiscordMessage discordMessage = messageManager.getParsedDiscordMessage("Discord.Embedded-messages.set-birthday", placeholders);
+                messageService.sendEmbed(discordMessage);
             } else {
                 sendMessage(player, messageManager.BIRTHDAY_SET_FUTURE_ERROR);
             }
@@ -153,9 +167,19 @@ public class MainCommand extends AbstractCommand {
             return;
         }
 
+        Player player = (Player) sender;
+
         PlayerManager.getInstance().removePlayerData(target);
         sendMessage(sender, messageManager.BIRTHDAY_DELETE_SUCCESS
                 .replaceText(builder -> builder.match("%player%").replacement(target.getName())));
+
+        Map<String, String> placeholders = Map.of(
+                "target_player", target.getName(),
+                "player", player.getName()
+        );
+
+        DiscordMessage discordMessage = messageManager.getParsedDiscordMessage("Discord.Embedded-messages.admin-delete-birthday", placeholders);
+        messageService.sendEmbed(discordMessage);
     }
 
     private void handleList(CommandSender sender, String[] args) {

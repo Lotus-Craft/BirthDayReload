@@ -6,8 +6,8 @@ public class DiscordManager {
     private final DiscordService service;
     private final MessageService messageService;
 
-    public DiscordManager(DiscordSettings settings) {
-        this.service = new DiscordService(settings);
+    public DiscordManager(DiscordService service) {
+        this.service = service;
         this.messageService = new MessageService(service);
     }
 

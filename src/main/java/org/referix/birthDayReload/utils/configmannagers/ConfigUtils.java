@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 
 public class ConfigUtils {
     private final Plugin plugin;
@@ -67,4 +68,5 @@ public class ConfigUtils {
         return config.getString(path, defaultValue);
     }
 
+    public List<String> getStringList(String path) { return config.getStringList(path);}
 }

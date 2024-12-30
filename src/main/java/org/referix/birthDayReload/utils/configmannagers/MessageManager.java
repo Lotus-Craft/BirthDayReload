@@ -2,10 +2,14 @@ package org.referix.birthDayReload.utils.configmannagers;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.plugin.Plugin;
+import org.referix.birthDayReload.discord.services.DiscordMessage;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class MessageManager {
     private final ConfigUtils configUtils;
@@ -139,6 +143,41 @@ public class MessageManager {
         }
     }
 
+
+    public DiscordMessage getDiscordMessage(String path) {
+        String title = configUtils.getString(path + ".title", "Default Title");
+        String color = configUtils.getString(path + ".color", "WHITE");
+        String[] message = configUtils.getStringList(path + ".message").toArray(new String[0]);
+        return new DiscordMessage(title, color, message);
+    }
+
+    public DiscordMessage getParsedDiscordMessage(String path, Map<String, String> placeholders) {
+        // Получение данных из конфигурации
+        String title = configUtils.getString(path + ".title", "Default Title").trim();
+        String color = configUtils.getString(path + ".color", "WHITE").trim();
+        List<String> messageLines = configUtils.getStringList(path + ".message");
+
+        // Замена плейсхолдеров в заголовке
+        for (Map.Entry<String, String> entry : placeholders.entrySet()) {
+            title = title.replace("%" + entry.getKey() + "%", entry.getValue());
+        }
+
+        // Замена плейсхолдеров и удаление лишних пробелов в сообщениях
+        List<String> parsedLines = new ArrayList<>();
+        for (String line : messageLines) {
+            line = line.trim(); // Убираем пробелы в начале и конце строки
+            for (Map.Entry<String, String> entry : placeholders.entrySet()) {
+                line = line.replace("%" + entry.getKey() + "%", entry.getValue());
+            }
+            parsedLines.add(line);
+        }
+
+        // Преобразование списка в массив строк
+        String[] parsedMessage = parsedLines.stream().map(String::trim).toArray(String[]::new);
+
+        // Возврат готового сообщения
+        return new DiscordMessage(title, color, parsedMessage);
+    }
 
 
 

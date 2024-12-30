@@ -17,6 +17,8 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.referix.birthDayReload.discord.services.DiscordMessage;
+import org.referix.birthDayReload.discord.services.MessageService;
 import org.referix.birthDayReload.inventory.InventoryManager;
 import org.referix.birthDayReload.playerdata.PlayerData;
 import org.referix.birthDayReload.playerdata.PlayerManager;
@@ -24,6 +26,7 @@ import org.referix.birthDayReload.utils.configmannagers.MessageManager;
 import org.referix.birthDayReload.utils.luckperm.LuckPerm;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 import static org.referix.birthDayReload.utils.LoggerUtils.log;
 
@@ -32,11 +35,13 @@ public class MainListener implements Listener {
     private final NamespacedKey textureKey;
     private final LuckPerm luckPerm;
     private final MessageManager messageManager;
+    private final MessageService messageService;
 
-    public MainListener(NamespacedKey textureKey, LuckPerm luckPerm, MessageManager messageManager) {
+    public MainListener(NamespacedKey textureKey, LuckPerm luckPerm, MessageManager messageManager, MessageService messageService) {
         this.textureKey = textureKey;
         this.luckPerm = luckPerm;
         this.messageManager = messageManager;
+        this.messageService = messageService;
     }
 
     @EventHandler
@@ -62,6 +67,14 @@ public class MainListener implements Listener {
                 if (!data.isWished()) {
                     player.sendMessage("§6§lHappy Birthday, " + player.getName() + "! 🎉");
                     player.sendMessage("§aMay your day be filled with joy and celebration!");
+
+//                    Map<String, String> placeholders = Map.of(
+//                            "player", player.getName(),
+//                            "date", data.getBirthday().toString()
+//                    );
+//
+//                    DiscordMessage discordMessage = messageManager.getParsedDiscordMessage("Discord.Embedded-messages.happy-birthday", placeholders);
+//                    messageService.sendEmbed(discordMessage);
                     // Perms Luck
                     log("Birthday prefix and wish set for: " + player.getName());
                 }

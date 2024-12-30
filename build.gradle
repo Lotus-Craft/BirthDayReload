@@ -43,9 +43,6 @@ dependencies {
 
     // JDA
     implementation("net.dv8tion:JDA:5.0.0-beta.22") {
-        exclude group: "com.fasterxml.jackson.core" // Убираем JSON обработчик
-        exclude group: "com.squareup.okhttp3"       // Убираем HTTP-клиент, если не используете REST
-        exclude group: "org.apache.commons"         // Commons Utils
         exclude module: "opus-java"                 // Убираем аудио
         exclude group: "org.slf4j"                  // Если используете другой логгер
     }
@@ -82,6 +79,7 @@ shadowJar {
     archiveBaseName.set('BIRTHDAY') // Назва файлу
     archiveVersion.set('1.0.0-DEV') // Версія файлу
     archiveClassifier.set('') // Без класифікатора
+    mergeServiceFiles()
     minimize()
     exclude 'org/sqlite/native/**'
     relocate 'org.jdbi', 'org.referix.libs.jdbi'

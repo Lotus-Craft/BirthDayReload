@@ -16,6 +16,24 @@ Discord:
   enabled: false
   token: ""
   channel-id: ""
+  Embedded-messages:
+    set-birthday:
+      title: "%player%"
+      color: GRAY
+      message:
+        - "Gave his birthday: %date%"
+        - "Wishes: %wishes%"
+    happy-birthday:
+      title: "%player%"
+      color: BLUE
+      message:
+        - "Today is %player%'s Birthday! Let's congratulate them in the Minecraft chat and Discord on this wonderful occasion, wish them all the best, and give them some amazing gifts!"
+    admin-delete-birthday:
+      title: "The birthday was deleted from %target_player%"
+      color: RED
+      message:
+        - "By the administrator - %player%"
+
 
 Messages:
   user-no-enter-data: "<red>You haven't specified your birthday. Use <yellow>/birthday set <yyyy-mm-dd></yellow></red>"

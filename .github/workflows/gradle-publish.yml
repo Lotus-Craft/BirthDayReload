@@ -1,78 +1,141 @@
-name: Build and Release Plugin
-
+name: Build and Release with Semantic Version
 
 on:
   push:
     branches:
-      - dev # Trigger only for the 'dev' branch
+      - dev
+      - main
 
 jobs:
-  build:
+  build-and-release:
     runs-on: ubuntu-latest
-
     steps:
-      # Step 1: Clone the repository
-      - name: Checkout Repository
+      # ------------------------------------------------
+      # 1. Клонуємо репозиторій
+      # ------------------------------------------------
+      - name: Checkout
         uses: actions/checkout@v3
 
-      # Step 2: Set up the Java Development Kit (JDK)
-      - name: Set Up JDK
+      # ------------------------------------------------
+      # 2. Встановлюємо Java (для Gradle)
+      # ------------------------------------------------
+      - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '17' # Matches Gradle configuration
+          java-version: '17'
 
-      # Step 3: Build the plugin using Gradle
+      # ------------------------------------------------
+      # 3. Semantic Versioning (PaulHatch/semantic-version)
+      # ------------------------------------------------
+      - name: Determine Version
+        id: version
+        uses: PaulHatch/semantic-version@v5.4.0
+        with:
+          tag_prefix: v
+          major_pattern: /BREAKING CHANGE|feat!/
+          minor_pattern: /feat:/
+          default_version: '0.1.0'
+          search_commit_body: false
+          # debug: true   # Увімкніть, якщо потрібен додатковий лог
+
+      # ------------------------------------------------
+      # 4. Формуємо тег і назву JAR (BirthDay-%version%)
+      #    залежно від гілки (dev => -dev)
+      # ------------------------------------------------
+      - name: Prepare Tag Variables
+        id: prepare_tag
+        run: |
+          BRANCH_NAME="${GITHUB_REF_NAME}"  # "dev" або "main"
+          RAW_VERSION="${{ steps.version.outputs.version }}"  # Напр.: "1.2.3"
+          TAG_PREFIX="v"  # Префікс для тегу, який визначили вище.
+
+          if [ "$BRANCH_NAME" = "dev" ]; then
+            # Пререліз для dev
+            NEW_TAG="${TAG_PREFIX}${RAW_VERSION}-dev"
+            IS_PRERELEASE="true"
+            # Наприклад, BirthDay-1.2.3-dev.jar
+            JAR_NAME="BirthDay-${RAW_VERSION}-dev.jar"
+            RELEASE_NAME="Dev Release BirthDay ${RAW_VERSION}"
+          else
+            # Стабільна версія (main)
+            NEW_TAG="${TAG_PREFIX}${RAW_VERSION}"
+            IS_PRERELEASE="false"
+            # Наприклад, BirthDay-1.2.3.jar
+            JAR_NAME="BirthDay-${RAW_VERSION}.jar"
+            RELEASE_NAME="Release BirthDay ${RAW_VERSION}"
+          fi
+
+          echo "new_tag=$NEW_TAG" >> $GITHUB_OUTPUT
+          echo "is_prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
+          echo "jar_name=$JAR_NAME" >> $GITHUB_OUTPUT
+          echo "release_name=$RELEASE_NAME" >> $GITHUB_OUTPUT
+
+      # ------------------------------------------------
+      # 5. Збираємо проєкт (Gradle)
+      # ------------------------------------------------
       - name: Build with Gradle
         run: ./gradlew shadowJar
 
-      # Step 4: Extract commit message and parse tag
-      - name: Parse Commit Message for Tag
-        id: parse_commit_message
-        run: |
-          COMMIT_MSG=$(git log -1 --pretty=format:"%s")
-          echo "commit_message=$COMMIT_MSG" >> $GITHUB_ENV
-          if [[ "$COMMIT_MSG" =~ \[(.+)\] ]]; then
-            TAG_NAME="${BASH_REMATCH[1]}"
-          else
-            TAG_NAME="default-tag"
-          fi
-          echo "tag_name=$TAG_NAME" >> $GITHUB_ENV
-
-      # Step 5: Rename the JAR file to match the commit message
-      - name: Rename JAR File
-        id: rename_jar
+      # ------------------------------------------------
+      # 6. Перейменовуємо JAR (замість my-plugin => BirthDay)
+      # ------------------------------------------------
+      - name: Rename JAR
         run: |
           FILE=$(find build/libs -name '*.jar' | head -n 1)
           if [ -z "$FILE" ]; then
-            echo "[ERROR] JAR file not found in build/libs!"
+            echo "No JAR file found!"
             exit 1
           fi
-          NEW_NAME="${{ env.commit_message }}.jar"
-          mv "$FILE" "build/libs/$NEW_NAME"
-          echo "path=build/libs/$NEW_NAME" >> $GITHUB_ENV
+          mv "$FILE" "build/libs/${{ steps.prepare_tag.outputs.jar_name }}"
+          echo "Renamed to ${{ steps.prepare_tag.outputs.jar_name }}"
 
-      # Step 6: Create a GitHub release
+      # ------------------------------------------------
+      # 7. (Необов'язково) Створюємо та пушимо новий тег
+      # ------------------------------------------------
+      - name: Create and Push Tag
+        run: |
+          NEW_TAG="${{ steps.prepare_tag.outputs.new_tag }}"
+          echo "Creating and pushing tag: $NEW_TAG"
+
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          git tag "$NEW_TAG" -m "Auto-bumped to $NEW_TAG"
+          git push origin "$NEW_TAG"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # ------------------------------------------------
+      # 8. Створюємо GitHub Release
+      # ------------------------------------------------
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
         with:
-          tag_name: ${{ env.tag_name }}
-          release_name: ${{ env.commit_message }}
+          tag_name: ${{ steps.prepare_tag.outputs.new_tag }}
+          release_name: ${{ steps.prepare_tag.outputs.release_name }}
           body: |
-            This is an experimental release of the development branch. It is intended for testing purposes and may include incomplete features or bugs. Please use it with caution and provide feedback if you encounter any issues.
+            **Автоматичний реліз** з гілки `${{ github.ref_name }}`
+
+            Версія: `${{ steps.version.outputs.version }}`  
+            (за версією semantic-version): `${{ steps.version.outputs.version_type }}`
+
+            JAR: `${{ steps.prepare_tag.outputs.jar_name }}`
           draft: false
-          prerelease: true
+          prerelease: ${{ steps.prepare_tag.outputs.is_prerelease }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Step 7: Upload the JAR file to the release
+      # ------------------------------------------------
+      # 9. Завантажуємо JAR у реліз
+      # ------------------------------------------------
       - name: Upload Plugin JAR
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ env.path }}
-          asset_name: ${{ env.commit_message }}.jar
+          asset_path: build/libs/${{ steps.prepare_tag.outputs.jar_name }}
+          asset_name: ${{ steps.prepare_tag.outputs.jar_name }}
           asset_content_type: application/java-archive
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

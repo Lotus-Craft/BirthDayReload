@@ -5,8 +5,6 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.referix.birthDayReload.discord.services.DiscordMessage;
-import org.referix.birthDayReload.discord.services.MessageService;
 import org.referix.birthDayReload.inventory.PresentInventory;
 import org.referix.birthDayReload.inventory.YearInventory;
 import org.referix.birthDayReload.playerdata.PlayerData;
@@ -26,13 +24,11 @@ import static org.referix.birthDayReload.utils.LoggerUtils.*;
 public class MainCommand extends AbstractCommand {
 
     private final MessageManager messageManager;
-    private final MessageService messageService;
     InventoryCommand inventoryCommand;
 
-    public MainCommand(String command, YearInventory birthdayInventory, MessageManager messageManager, MessageService messageService, PresentInventory presentInventory) {
+    public MainCommand(String command, YearInventory birthdayInventory, MessageManager messageManager, PresentInventory presentInventory) {
         super(command);
         this.messageManager = messageManager;
-        this.messageService = messageService;
         inventoryCommand = new InventoryCommand(presentInventory);
     }
 
@@ -128,8 +124,6 @@ public class MainCommand extends AbstractCommand {
                         "date", data.getBirthday().toString()
                 );
 
-                DiscordMessage discordMessage = messageManager.getParsedDiscordMessage("Discord.Embedded-messages.set-birthday", placeholders);
-                messageService.sendEmbed(discordMessage);
             } else {
                 sendMessage(player, messageManager.BIRTHDAY_SET_FUTURE_ERROR);
             }
@@ -178,8 +172,6 @@ public class MainCommand extends AbstractCommand {
                 "player", player.getName()
         );
 
-        DiscordMessage discordMessage = messageManager.getParsedDiscordMessage("Discord.Embedded-messages.admin-delete-birthday", placeholders);
-        messageService.sendEmbed(discordMessage);
     }
 
     private void handleList(CommandSender sender, String[] args) {

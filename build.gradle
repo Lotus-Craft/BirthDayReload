@@ -36,16 +36,11 @@ dependencies {
 
     // SQLite JDBC драйвер
     implementation 'org.xerial:sqlite-jdbc:3.45.1.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
 
     // Логування для JDBI (опціонально, для налагодження)
-    implementation 'org.jdbi:jdbi3-sqlobject:3.38.0'
-    runtimeOnly 'org.slf4j:slf4j-api:2.0.7'
 
-    // JDA
-    implementation("net.dv8tion:JDA:5.0.0-beta.22") {
-        exclude module: "opus-java"                 // Убираем аудио
-        exclude group: "org.slf4j"                  // Если используете другой логгер
-    }
+
 }
 
 def targetJavaVersion = 17
@@ -82,8 +77,11 @@ shadowJar {
     mergeServiceFiles()
     minimize()
     exclude 'org/sqlite/native/**'
+
+    // Переносим все зависимости в пространство имен org.referix.libs
     relocate 'org.jdbi', 'org.referix.libs.jdbi'
     relocate 'org.sqlite', 'org.referix.libs.sqlite'
 }
+
 
 build.dependsOn shadowJar

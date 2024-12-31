@@ -17,8 +17,6 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import org.referix.birthDayReload.discord.services.DiscordMessage;
-import org.referix.birthDayReload.discord.services.MessageService;
 import org.referix.birthDayReload.inventory.InventoryManager;
 import org.referix.birthDayReload.playerdata.PlayerData;
 import org.referix.birthDayReload.playerdata.PlayerManager;
@@ -35,13 +33,12 @@ public class MainListener implements Listener {
     private final NamespacedKey textureKey;
     private final LuckPerm luckPerm;
     private final MessageManager messageManager;
-    private final MessageService messageService;
 
-    public MainListener(NamespacedKey textureKey, LuckPerm luckPerm, MessageManager messageManager, MessageService messageService) {
+
+    public MainListener(NamespacedKey textureKey, LuckPerm luckPerm, MessageManager messageManager ) {
         this.textureKey = textureKey;
         this.luckPerm = luckPerm;
         this.messageManager = messageManager;
-        this.messageService = messageService;
     }
 
     @EventHandler

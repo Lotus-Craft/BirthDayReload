@@ -17,6 +17,7 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.referix.birthDayReload.discord.DiscordHttp;
 import org.referix.birthDayReload.inventory.InventoryManager;
 import org.referix.birthDayReload.playerdata.PlayerData;
 import org.referix.birthDayReload.playerdata.PlayerManager;
@@ -24,7 +25,6 @@ import org.referix.birthDayReload.utils.configmannagers.MessageManager;
 import org.referix.birthDayReload.utils.luckperm.LuckPerm;
 
 import java.time.LocalDate;
-import java.util.Map;
 
 import static org.referix.birthDayReload.utils.LoggerUtils.log;
 
@@ -33,12 +33,14 @@ public class MainListener implements Listener {
     private final NamespacedKey textureKey;
     private final LuckPerm luckPerm;
     private final MessageManager messageManager;
+    private final DiscordHttp discordHttp;
 
 
-    public MainListener(NamespacedKey textureKey, LuckPerm luckPerm, MessageManager messageManager ) {
+    public MainListener(NamespacedKey textureKey, LuckPerm luckPerm, MessageManager messageManager , DiscordHttp discordHttp) {
         this.textureKey = textureKey;
         this.luckPerm = luckPerm;
         this.messageManager = messageManager;
+        this.discordHttp = discordHttp;
     }
 
     @EventHandler
@@ -72,21 +74,21 @@ public class MainListener implements Listener {
 //
 //                    DiscordMessage discordMessage = messageManager.getParsedDiscordMessage("Discord.Embedded-messages.happy-birthday", placeholders);
 //                    messageService.sendEmbed(discordMessage);
-                    // Perms Luck
-                    log("Birthday prefix and wish set for: " + player.getName());
+                    if (discordHttp != null) discordHttp.sendHappyBirthdayMessage(player.getName());
                 }
                 data.setPrefix(BirthDayReload.getInstance().getMessageManager().BIRTHDAY_BOY_PREFIX); // Встановлюємо префікс
             } else {
                 // Скидання isWished, якщо сьогодні не день народження
                 if (data.isWished()) {
+                    discordHttp.resetPlayerMessageStatus(player.getName());
                     data.setIsWished(false);
                     data.setPrefix(null); // Встановлюємо префікс
                     manager.savePlayerData(player);
-                    log("Birthday flag reset for: " + player.getName());
                 }
             }
         }
     }
+
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {

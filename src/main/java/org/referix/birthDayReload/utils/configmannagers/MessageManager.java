@@ -37,9 +37,6 @@ public class MessageManager {
     private DateTimeFormatter dateFormatter;
 
     // Discord
-    public boolean DISCORD_ENABLED;
-    public String DISCORD_TOKEN;
-    public String DISCORD_CHANNEL_ID;
 
     public MessageManager(Plugin plugin) {
         this.plugin = plugin;
@@ -71,10 +68,6 @@ public class MessageManager {
         LUCK_PERM_ENABLED = configUtils.getBoolean("birthday-luckPerm.enable", false);
         LUCK_PERM_GROUP = configUtils.getString("birthday-luckPerm.group", "");
         LUCK_PERM_TIME = configUtils.getString("birthday-luckPerm.time", "1d");
-
-        DISCORD_ENABLED = configUtils.getBoolean("Discord.enabled", false);
-        DISCORD_TOKEN = configUtils.getString("Discord.token", "");
-        DISCORD_CHANNEL_ID = configUtils.getString("Discord.channel-id", "");
     }
 
     private Component logComponentLoad(String path) {

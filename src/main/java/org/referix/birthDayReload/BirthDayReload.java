@@ -7,12 +7,13 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.referix.birthDayReload.command.MainCommand;
 import org.referix.birthDayReload.database.Database;
-import org.referix.birthDayReload.discord.DiscordSettings;
+import org.referix.birthDayReload.discord.DiscordHttp;
 import org.referix.birthDayReload.inventory.PresentInventory;
 import org.referix.birthDayReload.inventory.InventoryClickHandler;
 import org.referix.birthDayReload.inventory.InventoryManager;
 import org.referix.birthDayReload.papi.BirthdayPlaceholder;
 import org.referix.birthDayReload.utils.configmannagers.ConfigUtils;
+import org.referix.birthDayReload.utils.configmannagers.DiscordConfig;
 import org.referix.birthDayReload.utils.configmannagers.ItemManagerConfig;
 import org.referix.birthDayReload.utils.configmannagers.MessageManager;
 import org.referix.birthDayReload.utils.luckperm.LuckPerm;
@@ -25,13 +26,13 @@ public final class BirthDayReload extends JavaPlugin {
     private static BirthDayReload instance;
 
     private MessageManager messageManager;
-    private DiscordSettings discordSettings;
 
     private ItemManagerConfig itemConfig;
 
     private LuckPerm luckPermUtils;
 
     private NamespacedKey textureKey;
+    private DiscordHttp discordHttp;
 
     @Override
     public void onEnable() {
@@ -55,9 +56,8 @@ public final class BirthDayReload extends JavaPlugin {
             ConfigUtils configUtils = new ConfigUtils(this);
             this.itemConfig = new ItemManagerConfig(this); // Инициализируем здесь
             this.messageManager = new MessageManager(this);
-            this.discordSettings = new DiscordSettings(messageManager);
             this.itemConfig = new ItemManagerConfig(this);
-            log("ItemManagerConfig initialized: " + (itemConfig != null));
+            log("ItemManagerConfig initialized: " + true);
         } catch (Exception e) {
             log("ItemManagerConfig is null: " + (itemConfig == null));
             log("Error loading config file: " + e.getMessage());
@@ -76,9 +76,9 @@ public final class BirthDayReload extends JavaPlugin {
 
         try {
             log("Try to start Discord Bot...");
-            DiscordSettings discordSettings = new DiscordSettings(messageManager);
-            if (discordSettings.getIsEnabled()) {
-
+            DiscordConfig discordSettings = new DiscordConfig(getConfig());
+            if (discordSettings.isEnabled()) {
+                this.discordHttp = new DiscordHttp(discordSettings);
 //                discordManager.getMessageService().sendMessage("Плагин BirthDayReload успешно запущен!");
 
                 log("The Discord bot has been successfully started");
@@ -99,7 +99,7 @@ public final class BirthDayReload extends JavaPlugin {
 
             // Создаем и регистрируем команды
             log("Creating MainCommand instance...");
-            new MainCommand("birthday", null, messageManager, presentInventory);
+            new MainCommand("birthday", null, messageManager, presentInventory, discordHttp);
             log("MainCommand registered successfully as 'birthday'.");
 
             log("Commands registered successfully.");
@@ -122,7 +122,7 @@ public final class BirthDayReload extends JavaPlugin {
         try {
             log("Registering listeners...");
             getServer().getPluginManager().registerEvents(new InventoryClickHandler(), this);
-            getServer().getPluginManager().registerEvents(new MainListener(textureKey,luckPermUtils,messageManager), this);
+            getServer().getPluginManager().registerEvents(new MainListener(textureKey,luckPermUtils,messageManager,discordHttp), this);
             log("Listeners registered successfully.");
         } catch (Exception e) {
             log("Error registering listeners: " + e.getMessage());
@@ -136,6 +136,7 @@ public final class BirthDayReload extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        discordHttp.close();
     }
 
     public LuckPerm getLuckPermUtils() {

@@ -19,18 +19,18 @@ Discord:
   Embedded-messages:
     set-birthday:
       title: "%player%"
-      color: GRAY
+      color: "#ffffff"
       message:
         - "Gave his birthday: %date%"
-        - "Wishes: %wishes%"
+        - "Wishes: "
     happy-birthday:
       title: "%player%"
-      color: BLUE
+      color: "#ffffff"
       message:
         - "Today is %player%'s Birthday! Let's congratulate them in the Minecraft chat and Discord on this wonderful occasion, wish them all the best, and give them some amazing gifts!"
     admin-delete-birthday:
       title: "The birthday was deleted from %target_player%"
-      color: RED
+      color: "#ffffff"
       message:
         - "By the administrator - %player%"
 

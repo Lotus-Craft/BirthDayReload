@@ -72,3 +72,6 @@ A Minecraft plugin to celebrate players' birthdays with customizable features an
 ## Support
 
 For assistance, feature requests, or bug reports, please reach out to us on Discord. Bring joy to your server with the Birthday Plugin! 🎉
+
+
+DISCORD: https://discord.gg/eA4YhNQRJM

@@ -37,7 +37,8 @@ jobs:
           minor_pattern: /feat:/
           default_version: '0.1.0'
           search_commit_body: false
-          # debug: true   # Увімкніть, якщо потрібен додатковий лог
+          bump_version: true  # Автоматичне збільшення версії
+
 
       # ------------------------------------------------
       # 4. Формуємо тег і назву JAR (BirthDay-%version%)

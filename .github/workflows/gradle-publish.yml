@@ -26,7 +26,17 @@ jobs:
           java-version: '17'
 
       # ------------------------------------------------
-      # 3. Semantic Versioning (PaulHatch/semantic-version)
+      # 3. Отримуємо останні теги релізів
+      # ------------------------------------------------
+      - name: Get Latest Tag
+        id: get_latest_tag
+        run: |
+          LATEST_TAG=$(git describe --tags --abbrev=0)
+          echo "Latest Tag: $LATEST_TAG"
+          echo "latest_tag=$LATEST_TAG" >> $GITHUB_ENV
+
+      # ------------------------------------------------
+      # 4. Semantic Versioning (PaulHatch/semantic-version)
       # ------------------------------------------------
       - name: Determine Version
         id: version
@@ -38,10 +48,10 @@ jobs:
           default_version: '0.1.0'
           search_commit_body: false
           bump_version: true  # Автоматичне збільшення версії
-
+          base_version: ${{ env.latest_tag }}  # Використовуємо останній тег для базової версії
 
       # ------------------------------------------------
-      # 4. Формуємо тег і назву JAR (BirthDay-%version%)
+      # 5. Формуємо тег і назву JAR (BirthDay-%version%)
       #    залежно від гілки (dev => -dev)
       # ------------------------------------------------
       - name: Prepare Tag Variables
@@ -73,13 +83,13 @@ jobs:
           echo "release_name=$RELEASE_NAME" >> $GITHUB_OUTPUT
 
       # ------------------------------------------------
-      # 5. Збираємо проєкт (Gradle)
+      # 6. Збираємо проєкт (Gradle)
       # ------------------------------------------------
       - name: Build with Gradle
         run: ./gradlew shadowJar
 
       # ------------------------------------------------
-      # 6. Перейменовуємо JAR (замість my-plugin => BirthDay)
+      # 7. Перейменовуємо JAR (замість my-plugin => BirthDay)
       # ------------------------------------------------
       - name: Rename JAR
         run: |
@@ -92,7 +102,7 @@ jobs:
           echo "Renamed to ${{ steps.prepare_tag.outputs.jar_name }}"
 
       # ------------------------------------------------
-      # 7. (Необов'язково) Створюємо та пушимо новий тег
+      # 8. (Необов'язково) Створюємо та пушимо новий тег
       # ------------------------------------------------
       - name: Create and Push Tag
         run: |
@@ -108,7 +118,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # ------------------------------------------------
-      # 8. Створюємо GitHub Release
+      # 9. Створюємо GitHub Release
       # ------------------------------------------------
       - name: Create GitHub Release
         id: create_release
@@ -129,7 +139,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # ------------------------------------------------
-      # 9. Завантажуємо JAR у реліз
+      # 10. Завантажуємо JAR у реліз
       # ------------------------------------------------
       - name: Upload Plugin JAR
         uses: actions/upload-release-asset@v1

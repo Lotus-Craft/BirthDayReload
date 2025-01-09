@@ -16,14 +16,18 @@ public class DiscordConfig {
     private String setBirthdayColor;
     private List<String> setBirthdayMessage;
 
+    private boolean isEnableSetBirthdayMessage;
+
     private String happyBirthdayTitle;
+
     private String happyBirthdayColor;
     private List<String> happyBirthdayMessage;
-
+    private boolean isEnableHappyBirthdayMessage;
     private String adminDeleteBirthdayTitle;
+
     private String adminDeleteBirthdayColor;
     private List<String> adminDeleteBirthdayMessage;
-
+    private boolean isEnableDeleteBirthdayMessage;
     public DiscordConfig(FileConfiguration config) {
         this.enabled = config.getBoolean("Discord.enabled");
         this.token = config.getString("Discord.token");
@@ -42,6 +46,7 @@ public class DiscordConfig {
             this.setBirthdayTitle = section.getString("title", "");
             this.setBirthdayColor = section.getString("color", "#FFFFFF");
             this.setBirthdayMessage = section.getStringList("message");
+            this.isEnableSetBirthdayMessage = section.getBoolean("enable", false);
         }
     }
 
@@ -50,6 +55,7 @@ public class DiscordConfig {
             this.happyBirthdayTitle = section.getString("title", "");
             this.happyBirthdayColor = section.getString("color", "#FFFFFF");
             this.happyBirthdayMessage = section.getStringList("message");
+            this.isEnableHappyBirthdayMessage = section.getBoolean("enable", false);
         }
     }
 
@@ -58,14 +64,15 @@ public class DiscordConfig {
             this.adminDeleteBirthdayTitle = section.getString("title", "");
             this.adminDeleteBirthdayColor = section.getString("color", "#FFFFFF");
             this.adminDeleteBirthdayMessage = section.getStringList("message");
+            this.isEnableDeleteBirthdayMessage = section.getBoolean("enable", false);
         }
     }
 
     // Геттери для основних параметрів
+
     public boolean isEnabled() {
         return enabled;
     }
-
     public String getToken() {
         return token;
     }
@@ -75,10 +82,10 @@ public class DiscordConfig {
     }
 
     // Геттери для "set-birthday"
+
     public String getSetBirthdayTitle() {
         return setBirthdayTitle;
     }
-
     public String getSetBirthdayColor() {
         return setBirthdayColor;
     }
@@ -88,10 +95,10 @@ public class DiscordConfig {
     }
 
     // Геттери для "happy-birthday"
+
     public String getHappyBirthdayTitle() {
         return happyBirthdayTitle;
     }
-
     public String getHappyBirthdayColor() {
         return happyBirthdayColor;
     }
@@ -101,16 +108,28 @@ public class DiscordConfig {
     }
 
     // Геттери для "admin-delete-birthday"
+
     public String getAdminDeleteBirthdayTitle() {
         return adminDeleteBirthdayTitle;
     }
-
     public String getAdminDeleteBirthdayColor() {
         return adminDeleteBirthdayColor;
     }
 
     public List<String> getAdminDeleteBirthdayMessage() {
         return adminDeleteBirthdayMessage;
+    }
+
+    public boolean isEnableSetBirthdayMessage() {
+        return isEnableSetBirthdayMessage;
+    }
+
+    public boolean isEnableHappyBirthdayMessage() {
+        return isEnableHappyBirthdayMessage;
+    }
+
+    public boolean isEnableDeleteBirthdayMessage() {
+        return isEnableDeleteBirthdayMessage;
     }
 }
 

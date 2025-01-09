@@ -3,6 +3,7 @@ package org.referix.birthDayReload.discord;
 import okhttp3.*;
 import org.referix.birthDayReload.utils.configmannagers.DiscordConfig;
 
+import javax.print.DocFlavor;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -30,6 +31,7 @@ public class DiscordHttp {
     }
 
     public void sendSetBirthdayMessage(String player, String date) {
+        if (!config.isEnableSetBirthdayMessage()) return;
         if (!enabled) {
             return;
         }
@@ -54,6 +56,7 @@ public class DiscordHttp {
     // Відправлення повідомлення "Happy Birthday"
     public void sendHappyBirthdayMessage(String player) {
         // Перевірка, чи повідомлення вже було відправлено
+        if (!config.isEnableHappyBirthdayMessage()) return;
         if (playerMessageStatus.getOrDefault(player, false)) {
 
             return; // Якщо повідомлення вже відправлено, не відправляємо знову
@@ -86,6 +89,7 @@ public class DiscordHttp {
 
     // Відправлення повідомлення "Admin Delete Birthday"
     public void sendAdminDeleteBirthdayMessage(String adminPlayer, String targetPlayer) {
+        if (!config.isEnableDeleteBirthdayMessage()) return;
         if (!enabled) {
             return;
         }

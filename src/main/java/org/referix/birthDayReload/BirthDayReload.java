@@ -2,8 +2,11 @@ package org.referix.birthDayReload;
 
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.referix.birthDayReload.command.MainCommand;
 import org.referix.birthDayReload.database.Database;
@@ -17,6 +20,14 @@ import org.referix.birthDayReload.utils.configmannagers.DiscordConfig;
 import org.referix.birthDayReload.utils.configmannagers.ItemManagerConfig;
 import org.referix.birthDayReload.utils.configmannagers.MessageManager;
 import org.referix.birthDayReload.utils.luckperm.LuckPerm;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
 import static org.referix.birthDayReload.utils.LoggerUtils.log;
 import static org.referix.birthDayReload.utils.LoggerUtils.logWarning;
@@ -34,8 +45,19 @@ public final class BirthDayReload extends JavaPlugin {
     private NamespacedKey textureKey;
     private DiscordHttp discordHttp;
 
+    private File configFile;
+
     @Override
     public void onEnable() {
+        // Завантаження та синхронізація конфігурації з дефолтним файлом
+        this.configFile = new File(getDataFolder(), "config.yml");
+        if (!configFile.exists()) {
+            saveDefaultConfig(); // Зберігаємо дефолтний конфіг якщо його немає
+        }
+
+        syncConfigWithDefaults(); // Викликаємо метод синхронізації конфігурацій
+        int pluginId = 24407; // <-- Replace with the id of your plugin!
+        Metrics metrics = new Metrics(this, pluginId);
         instance = this;
         log("System initialization started...");
 
@@ -139,6 +161,8 @@ public final class BirthDayReload extends JavaPlugin {
         discordHttp.close();
     }
 
+
+
     public LuckPerm getLuckPermUtils() {
         return this.luckPermUtils;
     }
@@ -154,5 +178,86 @@ public final class BirthDayReload extends JavaPlugin {
     public static BirthDayReload getInstance() {
         return instance;
     }
+
+
+    /**
+     * Синхронізація конфігурації на сервері з дефолтною конфігурацією
+     */
+    public void syncConfigWithDefaults() {
+        try {
+            // Завантажуємо дефолтну конфігурацію з JAR
+            InputStream defaultConfigStream = getResource("config.yml");
+            if (defaultConfigStream == null) {
+                getLogger().severe("Default config.yml is missing in the plugin JAR.");
+                return;
+            }
+
+            // Завантажуємо конфігурацію з потоку
+            FileConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultConfigStream));
+            getLogger().info("Default config loaded successfully from JAR.");
+
+            // Завантажуємо конфігурацію, яка на сервері (з файлу)
+            FileConfiguration serverConfig = YamlConfiguration.loadConfiguration(configFile);
+            getLogger().info("Server config loaded successfully.");
+
+            // Порівнюємо конфігурації та додаємо відсутні елементи з дефолтного конфігу в серверний
+            boolean updated = syncSections(defaultConfig, serverConfig, "");
+
+            if (updated) {
+                // Зберігаємо оновлений конфіг на сервері
+                serverConfig.save(configFile);
+                getLogger().info("Config.yml has been updated with missing default values.");
+            } else {
+                getLogger().info("Config.yml is already up-to-date.");
+            }
+        } catch (Exception e) {
+            getLogger().severe("Failed to sync config.yml with defaults: " + e.getMessage());
+        }
+    }
+
+    private boolean syncSections(FileConfiguration defaultConfig, FileConfiguration serverConfig, String path) {
+        boolean updated = false;
+
+        // Логування для порівняння файлів
+        getLogger().info("Comparing default config file (from JAR): " + getDataFolder().getAbsolutePath() + "/config.yml");
+
+        // Перевіряємо всі ключі в секціях на всіх рівнях
+        for (String key : defaultConfig.getConfigurationSection(path).getKeys(true)) {
+            String fullPath = path.isEmpty() ? key : path + "." + key;
+
+            // Логування для порівняння шляху
+            getLogger().info("Comparing path: " + fullPath);
+
+            // Якщо це секція, перевіряємо, чи вона відсутня на сервері
+            if (defaultConfig.isConfigurationSection(fullPath)) {
+                if (!serverConfig.isConfigurationSection(fullPath)) {
+                    serverConfig.createSection(fullPath); // Якщо секція відсутня — створюємо її
+                    updated = true;
+                    getLogger().info("Created missing section: " + fullPath);
+                }
+                updated |= syncSections(defaultConfig, serverConfig, fullPath); // Рекурсивно перевіряємо вкладені секції
+            } else {
+                // Якщо це ключ, перевіряємо його відсутність
+                if (!serverConfig.contains(fullPath)) {
+                    serverConfig.set(fullPath, defaultConfig.get(fullPath)); // Додаємо відсутній ключ
+                    updated = true;
+                    getLogger().info("Added missing key: " + fullPath + " = " + defaultConfig.get(fullPath));
+                } else {
+                    getLogger().info("Key already exists: " + fullPath);
+                }
+            }
+        }
+
+        return updated;
+    }
+
+
+
+
+
+
+
+
+
 
 }

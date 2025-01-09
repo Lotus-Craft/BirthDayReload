@@ -3,6 +3,8 @@ version: '1.0-SNAPSHOT'
 main: org.referix.birthDayReload.BirthDayReload
 api-version: '1.20'
 depend: [PlaceholderAPI]
+softdepend:
+  - LuckPerms
 commands:
   birthday:
     description: Manage birthdays.
@@ -13,9 +15,21 @@ permissions:
   birthday.use:
     description: Allow use of the /birthday command
     default: true
+  birthday.reload:
+    description: reload plugin
+    default: op
   birthday.delete:
     description: Allow deletion of birthday data
     default: op
   birthday.list:
     description: Allow listing all birthday data
+    default: op
+  birthday.present:
+    description: Allow present command
+    default: op
+  birthday.present.open:
+    description: Allow adding items to the birthday present
+    default: op
+  birthday.present.give:
+    description: Allow giving the birthday present to a player
     default: op

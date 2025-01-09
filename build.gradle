@@ -1,10 +1,10 @@
 plugins {
     id 'java'
-    id 'com.github.johnrengelman.shadow' version '7.1.0' // Плагін для shading
+    id 'com.github.johnrengelman.shadow' version '8.1.1' // Плагін для shading
 }
 
 group = 'org.referix'
-version = '1.0-SNAPSHOT'
+version = '1.0.0'
 
 repositories {
     mavenCentral()
@@ -23,22 +23,24 @@ repositories {
     maven {
         url = 'https://repo.extendedclip.com/content/repositories/placeholderapi/'
     }
+    maven { url 'https://repo.luckperms.net/' }
 }
 
 dependencies {
     compileOnly "io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT"
+    implementation 'org.bstats:bstats-bukkit:3.0.0'
     implementation 'com.mojang:authlib:1.5.21'
-
+    compileOnly 'net.luckperms:api:5.4'
     compileOnly 'me.clip:placeholderapi:2.11.6'
     // JDBI Core
     implementation 'org.jdbi:jdbi3-core:3.38.0'
 
     // SQLite JDBC драйвер
     implementation 'org.xerial:sqlite-jdbc:3.45.1.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
 
     // Логування для JDBI (опціонально, для налагодження)
-    implementation 'org.jdbi:jdbi3-sqlobject:3.38.0'
-    runtimeOnly 'org.slf4j:slf4j-api:2.0.7'
+
 
 }
 
@@ -70,11 +72,17 @@ processResources {
 
 // ShadowJar конфігурація
 shadowJar {
-    archiveClassifier.set('') // Замінює стандартний JAR
+    archiveBaseName.set('BIRTHDAY') // Назва файлу
+    archiveVersion.set('1.0.0-DEV') // Версія файлу
+    archiveClassifier.set('') // Без класифікатора
+    mergeServiceFiles()
     minimize()
     exclude 'org/sqlite/native/**'
+
+    // Переносим все зависимости в пространство имен org.referix.libs
     relocate 'org.jdbi', 'org.referix.libs.jdbi'
     relocate 'org.sqlite', 'org.referix.libs.sqlite'
+    relocate 'org.bstats', 'org.referix.libs.bstats'
 }
 
 

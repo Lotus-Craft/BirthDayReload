@@ -1,9 +1,11 @@
 package org.referix.birthDayReload.playerdata;
 
 import org.bukkit.entity.Player;
+import org.referix.birthDayReload.BirthDayReload;
 import org.referix.birthDayReload.database.Database;
 import org.referix.birthDayReload.database.PlayerDataDAO;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -52,5 +54,28 @@ public class PlayerManager {
      */
     public List<PlayerData> getAllPlayerDataFromDatabase() {
         return dao.loadAllPlayerData();
+    }
+
+
+    public void updateBirthdayPrefixes() {
+        LocalDate today = LocalDate.now();
+
+        for (PlayerData playerData : getAllPlayerData().values()) {
+            if (isBirthdayToday(playerData, today)) {
+                // Установить префикс "Birthday Boy" для игрока
+                playerData.setPrefix(BirthDayReload.getInstance().getMessageManager().BIRTHDAY_BOY_PREFIX);
+                savePlayerData(playerData.getPlayer());
+            }
+        }
+    }
+
+    // Проверка, совпадает ли дата рождения игрока с текущей датой
+    public boolean isBirthdayToday(PlayerData playerData, LocalDate today) {
+        LocalDate birthday = playerData.getBirthday();
+
+        // Проверяем, что дата рождения задана, и сравниваем месяц и день
+        return birthday != null &&
+                birthday.getMonth() == today.getMonth() &&
+                birthday.getDayOfMonth() == today.getDayOfMonth();
     }
 }

@@ -1,0 +1,55 @@
+Birthday-boy-prefix: "<gradient:#5a00ff:#e500ff>Birthday-boy</gradient>"
+# - MM-dd (example: 12-31)
+# - MM.dd (example: 12.31)
+# - yyyy-MM-dd (example: 2000-12-31)
+# - yyyy.MM.dd (example: 2000.12.31)
+Format-Data: "MM-dd"
+
+currentDate: "Europe/Kiev" # the timezone the plugin will focus on
+
+birthday-luckPerm:
+  enable: false # to use need the setup LuckPerm
+  group: "birthday-vip" # group luck perm
+  time: 7d # time (d - day, h - hour, w - week , mo, y)
+
+Discord:
+  enabled: false
+  token: ""
+  channel-id: ""
+  Embedded-messages:
+    set-birthday:
+      enable: false
+      title: "%player%"
+      color: "#ffffff"
+      message:
+        - "Gave his birthday: %date%"
+        - "Wishes: "
+    happy-birthday:
+      enable: true
+      title: "%player%"
+      color: "#ffffff"
+      message:
+        - "Today is %player%'s Birthday! Let's congratulate them in the Minecraft chat and Discord on this wonderful occasion, wish them all the best, and give them some amazing gifts!"
+    admin-delete-birthday:
+      enable: false
+      title: "The birthday was deleted from %target_player%"
+      color: "#ffffff"
+      message:
+        - "By the administrator - %player%"
+
+
+Messages:
+  user-no-enter-data: "<red>You haven't specified your birthday. Use <yellow>/birthday set <yyyy-mm-dd></yellow></red>"
+  birthday-set-success: "<green>Your birthday has been set to: <bold>%date%</bold></green>"
+  birthday-set-future-error: "<red>Invalid date. The birthday cannot be in the future.</red>"
+  birthday-set-format-error: "<red>Invalid date format. Use <bold>%data%</bold>.</red>"
+  birthday-delete-no-permission: "<red>You don't have permission to use this command.</red>"
+  birthday-delete-usage: "<red>Usage: /birthday delete <player name></red>"
+  birthday-delete-success: "<green>Birthday data for <bold>%player%</bold> has been deleted.</green>"
+  birthday-delete-player-not-found: "<red>Player not found.</red>"
+  birthday-unknown-command: "<red>Unknown subcommand. Use <yellow>/birthday help</yellow> for more information.</red>"
+  birthday-only-players: "<red>Only players can set their own birthday.</red>"
+  birthday-already-set: "<red>Your birthday is already set to: <bold>%date%</bold>. It cannot be changed.</red>"
+  birthday-luckperm-message: "<green>Congratulations! <bold>You have received a donation gift: <gold>VIP group</gold>!</bold></green> <yellow>Enjoy your special perks!</yellow>"
+
+

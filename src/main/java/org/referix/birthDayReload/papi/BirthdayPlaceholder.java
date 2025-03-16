@@ -9,13 +9,18 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.referix.birthDayReload.playerdata.PlayerData;
 import org.referix.birthDayReload.playerdata.PlayerManager;
+import org.referix.birthDayReload.utils.configmannagers.MessageManager;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public class BirthdayPlaceholder extends PlaceholderExpansion {
 
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private final DateTimeFormatter DATE_FORMAT;
+
+    public BirthdayPlaceholder(MessageManager messageManager) {
+        DATE_FORMAT = DateTimeFormatter.ofPattern(messageManager.getDateFormat());
+    }
 
     @Override
     public @NotNull String getIdentifier() {

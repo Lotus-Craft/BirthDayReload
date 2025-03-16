@@ -5,14 +5,15 @@ import org.bukkit.plugin.Plugin;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
-
+import java.time.temporal.ChronoField;
 
 public class MessageManager {
     private final ConfigUtils configUtils;
     private final Plugin plugin;
 
-    // Messages
+    // Повідомлення
     public Component BIRTHDAY_BOY_PREFIX;
     public Component USER_NO_ENTER_DATA;
     public Component BIRTHDAY_SET_SUCCESS;
@@ -26,17 +27,14 @@ public class MessageManager {
     public Component BIRTHDAY_ONLY_PLAYERS;
     public Component BIRTHDAY_ALREADY_SET;
     public Component BIRTHDAY_LUCKPERMS_MESSAGE;
-    //LuckPerm
+    // LuckPerms
     public boolean LUCK_PERM_ENABLED;
     public String LUCK_PERM_GROUP;
     public String LUCK_PERM_TIME;
 
-
-    // Date format
+    // Формат дати
     private String dateFormat;
     private DateTimeFormatter dateFormatter;
-
-    // Discord
 
     public MessageManager(Plugin plugin) {
         this.plugin = plugin;
@@ -57,14 +55,13 @@ public class MessageManager {
         BIRTHDAY_UNKNOWN_COMMAND = logComponentLoad("Messages.birthday-unknown-command");
         BIRTHDAY_ONLY_PLAYERS = logComponentLoad("Messages.birthday-only-players");
         BIRTHDAY_ALREADY_SET = logComponentLoad("Messages.birthday-already-set");
-
         BIRTHDAY_LUCKPERMS_MESSAGE = logComponentLoad("Messages.birthday-luckperm-message");
 
         // Зчитування формату дати з конфігурації
         dateFormat = configUtils.getString("Format-Data", "yyyy-MM-dd");
         updateDateFormatter();
 
-        //luckperms
+        // luckperms
         LUCK_PERM_ENABLED = configUtils.getBoolean("birthday-luckPerm.enable", false);
         LUCK_PERM_GROUP = configUtils.getString("birthday-luckPerm.group", "");
         LUCK_PERM_TIME = configUtils.getString("birthday-luckPerm.time", "1d");
@@ -82,7 +79,12 @@ public class MessageManager {
 
     private void updateDateFormatter() {
         try {
-            dateFormatter = DateTimeFormatter.ofPattern(dateFormat);
+            DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder().appendPattern(dateFormat);
+            // Якщо у шаблоні не задано рік, встановлюємо значення за замовчуванням 2000
+            if (!dateFormat.toLowerCase().contains("y")) {
+                builder.parseDefaulting(ChronoField.YEAR, 2000);
+            }
+            dateFormatter = builder.toFormatter();
             plugin.getLogger().info("Date format updated to: " + dateFormat);
         } catch (IllegalArgumentException e) {
             plugin.getLogger().warning("Invalid date format in config: " + dateFormat + ". Defaulting to yyyy-MM-dd.");
@@ -97,45 +99,37 @@ public class MessageManager {
         plugin.getLogger().info("Messages reloaded successfully.");
     }
 
-
     public LocalDate parseDate(String date) {
+        // Нормалізація дати: видалення зайвих пробілів та заміна роздільників на дефіс
         String normalizedDate = normalizeDate(date);
-
         try {
-            // Перевіряємо, чи введена повна дата у форматі yyyy-MM-dd або yyyy.MM.dd
-            if (normalizedDate.matches("\\d{4}[-.]\\d{2}[-.]\\d{2}")) {
-                // Якщо формат yyyy.MM.dd, замінюємо "." на "-"
-                normalizedDate = normalizedDate.replace(".", "-");
-                DateTimeFormatter fullDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                return LocalDate.parse(normalizedDate, fullDateFormatter);
-            }
-
-            // Якщо формат MM-dd або MM.dd, додаємо рік 2000
-            if (normalizedDate.matches("\\d{2}[-.]\\d{2}")) {
-                normalizedDate = "2000-" + normalizedDate.replace(".", "-");
-                DateTimeFormatter partialDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                return LocalDate.parse(normalizedDate, partialDateFormatter);
-            }
-
-            // Якщо формат не підтримується
-            throw new DateTimeParseException("Unsupported date format", date, 0);
+            return LocalDate.parse(normalizedDate, dateFormatter);
         } catch (DateTimeParseException e) {
-            plugin.getLogger().warning("Unable to parse date: " + date + " with formats: yyyy-MM-dd, yyyy.MM.dd, MM-dd, or MM.dd.");
-            throw new IllegalArgumentException("Дата повинна бути у форматі yyyy-MM-dd, yyyy.MM.dd, MM-dd або MM.dd.");
+            plugin.getLogger().warning("Unable to parse date: " + date + " with format: " + dateFormat);
+            throw new IllegalArgumentException("Supported date format is: " + dateFormat);
         }
     }
 
-
+    /**
+     * Нормалізація дати:
+     * - Видаляємо зайві пробіли.
+     * - Визначаємо очікуваний роздільник за конфігурацією (наприклад, '-' або '.').
+     * - Замінюємо усі послідовності нецифрових символів на очікуваний роздільник.
+     */
     private String normalizeDate(String date) {
-        // Видалення зайвих пробілів
         date = date.trim();
-
-        // Заміна будь-яких роздільників на дефіс
-        return date.replaceAll("[./,;\\s-]", "-");
+        char expectedDelimiter = '-';
+        // Шукаємо перший символ, що не є буквою чи цифрою у dateFormat як роздільник
+        for (int i = 0; i < dateFormat.length(); i++) {
+            char ch = dateFormat.charAt(i);
+            if (!Character.isLetterOrDigit(ch)) {
+                expectedDelimiter = ch;
+                break;
+            }
+        }
+        // Замінюємо будь-які послідовності нецифрових символів на очікуваний роздільник
+        return date.replaceAll("\\D+", String.valueOf(expectedDelimiter));
     }
-
-
-
 
     public String formatDate(LocalDate date) {
         return date.format(dateFormatter);
@@ -145,4 +139,3 @@ public class MessageManager {
         return dateFormat;
     }
 }
-

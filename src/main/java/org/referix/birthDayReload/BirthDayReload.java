@@ -45,6 +45,8 @@ public final class BirthDayReload extends JavaPlugin {
     private NamespacedKey textureKey;
     private DiscordHttp discordHttp;
 
+    private DiscordConfig discordSettings;
+
     private File configFile;
 
     @Override
@@ -98,7 +100,7 @@ public final class BirthDayReload extends JavaPlugin {
 
         try {
             log("Try to start Discord Bot...");
-            DiscordConfig discordSettings = new DiscordConfig(getConfig());
+            discordSettings = new DiscordConfig(getConfig());
             if (discordSettings.isEnabled()) {
                 this.discordHttp = new DiscordHttp(discordSettings);
 //                discordManager.getMessageService().sendMessage("Плагин BirthDayReload успешно запущен!");
@@ -134,7 +136,7 @@ public final class BirthDayReload extends JavaPlugin {
 
         // Регистрация PlaceholderAPI
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-            new BirthdayPlaceholder().register();
+            new BirthdayPlaceholder(messageManager).register();
             log("BirthdayPlaceholder successfully registered with PlaceholderAPI.");
         } else {
             logWarning("PlaceholderAPI not found. BirthdayPlaceholder not registered.");
@@ -158,7 +160,9 @@ public final class BirthDayReload extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        discordHttp.close();
+        if (discordSettings.isEnabled()){
+            discordHttp.close();
+        }
     }
 
 

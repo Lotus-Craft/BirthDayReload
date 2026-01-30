@@ -158,10 +158,13 @@ public final class BirthDayReload extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        if (discordSettings.isEnabled()){
-            discordHttp.close();
+        if (discordSettings != null && discordSettings.isEnabled()) {
+            if (discordHttp != null) {
+                discordHttp.close();
+            }
         }
     }
+
 
 
 

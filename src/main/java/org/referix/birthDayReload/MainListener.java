@@ -1,9 +1,12 @@
 package org.referix.birthDayReload;
 
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Skull;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Firework;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -28,6 +31,7 @@ import org.referix.birthDayReload.utils.luckperm.LuckPerm;
 import java.time.LocalDate;
 
 import static org.referix.birthDayReload.utils.LoggerUtils.log;
+import static org.referix.birthDayReload.utils.LoggerUtils.logWarning;
 
 public class MainListener implements Listener {
 
@@ -44,6 +48,8 @@ public class MainListener implements Listener {
         this.discordHttp = discordHttp;
     }
 
+
+
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
@@ -58,15 +64,16 @@ public class MainListener implements Listener {
             data = manager.getPlayerData(player);
             log("Player data loaded from cache for: " + player.getName());
         }
-
         // Перевірка на день народження
         if (data.getBirthday() != null) {
             LocalDate today = LocalDate.now();
 
             if (PlayerManager.getInstance().isBirthdayToday(data, today)) {
                 if (!data.isWished()) {
-                    player.sendMessage("§6§lHappy Birthday, " + player.getName() + "! 🎉");
-                    player.sendMessage("§aMay your day be filled with joy and celebration!");
+                    player.sendMessage(messageManager.BIRTHDAY_SELEBRATION_MESSAGE_FIRST
+                            .replaceText(builder -> builder.match("%player%").replacement(player.getName())));
+                    player.sendMessage(messageManager.BIRTHDAY_SELEBRATION_MESSAGE_SECOND
+                            .replaceText(builder -> builder.match("%player%").replacement(player.getName())));
 
 //                    Map<String, String> placeholders = Map.of(
 //                            "player", player.getName(),

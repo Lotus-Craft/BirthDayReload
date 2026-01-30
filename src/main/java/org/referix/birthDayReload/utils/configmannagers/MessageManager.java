@@ -28,6 +28,8 @@ public class MessageManager {
     public Component BIRTHDAY_ONLY_PLAYERS;
     public Component BIRTHDAY_ALREADY_SET;
     public Component BIRTHDAY_LUCKPERMS_MESSAGE;
+    public Component BIRTHDAY_SELEBRATION_MESSAGE_FIRST;
+    public Component BIRTHDAY_SELEBRATION_MESSAGE_SECOND;
     // LuckPerms
     public boolean LUCK_PERM_ENABLED;
     public String LUCK_PERM_GROUP;
@@ -58,7 +60,8 @@ public class MessageManager {
         BIRTHDAY_ONLY_PLAYERS = logComponentLoad("Messages.birthday-only-players");
         BIRTHDAY_ALREADY_SET = logComponentLoad("Messages.birthday-already-set");
         BIRTHDAY_LUCKPERMS_MESSAGE = logComponentLoad("Messages.birthday-luckperm-message");
-
+        BIRTHDAY_SELEBRATION_MESSAGE_FIRST = logComponentLoad("Messages.birthday-selebration-message-first");
+        BIRTHDAY_SELEBRATION_MESSAGE_SECOND = logComponentLoad("Messages.birthday-selebration-message-second");
         // Зчитування формату дати з конфігурації
         dateFormat = configUtils.getString("Format-Data", "yyyy-MM-dd");
         updateDateFormatter();

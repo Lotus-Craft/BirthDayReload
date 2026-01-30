@@ -30,14 +30,20 @@ public class DiscordConfig {
     private boolean isEnableDeleteBirthdayMessage;
     public DiscordConfig(FileConfiguration config) {
         this.enabled = config.getBoolean("Discord.enabled");
-        this.token = config.getString("Discord.token");
-        this.channelId = config.getString("Discord.channel-id");
+        if (!this.enabled) {
+            System.out.println("[DiscordHttp] Sending set birthday message. " + enabled);
+            this.token = null;
+            this.channelId = null;
+        } else {
+            this.token = config.getString("Discord.token");
+            this.channelId = config.getString("Discord.channel-id");
 
-        ConfigurationSection embeddedMessages = config.getConfigurationSection("Discord.Embedded-messages");
-        if (embeddedMessages != null) {
-            loadSetBirthday(embeddedMessages.getConfigurationSection("set-birthday"));
-            loadHappyBirthday(embeddedMessages.getConfigurationSection("happy-birthday"));
-            loadAdminDeleteBirthday(embeddedMessages.getConfigurationSection("admin-delete-birthday"));
+            ConfigurationSection embeddedMessages = config.getConfigurationSection("Discord.Embedded-messages");
+            if (embeddedMessages != null) {
+                loadSetBirthday(embeddedMessages.getConfigurationSection("set-birthday"));
+                loadHappyBirthday(embeddedMessages.getConfigurationSection("happy-birthday"));
+                loadAdminDeleteBirthday(embeddedMessages.getConfigurationSection("admin-delete-birthday"));
+            }
         }
     }
 

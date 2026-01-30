@@ -15,7 +15,7 @@ public class DiscordHttp {
     private final String botToken;
     private final String channelId;
     private final OkHttpClient client;
-    private boolean enabled; // Стан бота
+    private final boolean enabled; // Стан бота
     private final DiscordConfig config; // Конфігурація Discord
 
     private final Map<String, Boolean> playerMessageStatus = new HashMap<>();
